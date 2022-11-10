@@ -1,6 +1,3 @@
-#autoload -Uz compinit
-#compinit
-
 setopt inc_append_history
 setopt share_history
 
@@ -27,6 +24,9 @@ source ~/.zsh/completion/git-prompt.sh
 fpath=(~/.zsh $fpath)
 zstyle ':completion:*:*:git:*' script ~/.zsh/completion/git-completion.bash
 autoload -Uz compinit && compinit
+
+# simlimkを表示する
+alias ll=$HOME/.list_links.sh
 
 # プロンプトのオプション表示設定
 GIT_PS1_SHOWDIRTYSTATE=true
