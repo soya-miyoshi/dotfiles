@@ -1,5 +1,6 @@
 inoremap <silent> jj <ESC>
 set number
+syntax on 
 
 "-------------
 " Change the tab
