@@ -1,3 +1,5 @@
+set -o vi
+
 setopt inc_append_history
 setopt share_history
 
