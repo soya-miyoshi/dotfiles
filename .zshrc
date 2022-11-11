@@ -2,6 +2,8 @@
 # if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 #   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 # fi
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # zinitの読み込み
 ZDOTDIR="$(ghq root)/github.com/soya2222/dotfiles"
 source "$(ghq root)/github.com/zdharma-continuum/zinit/zinit.zsh"
@@ -11,8 +13,9 @@ fpath=(~/.zsh $fpath)
 zstyle ':completion:*:*:git:*' script ~/.zsh/completion/git-completion.bash
 autoload -Uz compinit && compinit
 
+
 # git-promptの読み込み
-source ~/.zsh/completion/git-prompt.sh
+source $ZDOTDIR/.zsh/completion/git-prompt.sh
 GIT_PS1_SHOWDIRTYSTATE=true
 GIT_PS1_SHOWUNTRACKEDFILES=true
 GIT_PS1_SHOWSTASHSTATE=true

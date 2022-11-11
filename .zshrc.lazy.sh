@@ -18,11 +18,9 @@ export HISTSIZE=10000
 # AWSのデフォルトプロファイルを設定
 source $HOME/private-dotfiles/.aws-default-profile
 
-alias ll=$HOME/.list_links.sh
-
 # simlimkを表示する
-alias ll=$HOME/.list_links.sh
-
+alias mylink="find $HOME -type l -maxdepth 1"
+alias unlink="find . -type l -maxdepth 1 | xargs -I% unlink %"
 
 # kubectx
 export PATH=~/.kubectx:$PATH
