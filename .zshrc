@@ -30,5 +30,5 @@ KUBE_PS1_SUFFIX=') '
 export PS1='$(kube_ps1)'$PS1
 
 zinit wait lucid light-mode as'null' \
-    atinit'source "$ZDOTDIR/.zshrc.lazy"' \
+    atinit'source "$ZDOTDIR/.zshrc.lazy.sh"' \
     for 'zdharma-continuum/null'
