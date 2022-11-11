@@ -21,7 +21,7 @@ source $HOME/private-dotfiles/.aws-default-profile
 
 # simlimkを表示する
 alias mylink="find $HOME -type l -maxdepth 1"
-alias unlink="find . -type l -maxdepth 1 | xargs -I% unlink %"
+alias unlink="find $HOME -type l -maxdepth 1 | xargs -I% unlink %"
 
 # kubectx
 export PATH=~/.kubectx:$PATH
