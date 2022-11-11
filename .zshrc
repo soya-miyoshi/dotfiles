@@ -6,6 +6,11 @@ setopt share_history
 eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(saml2aws --completion-script-zsh)"
 
+# Source Prezto.
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+fi
+
 # rbenvの設定
 eval "$(rbenv init -)"
 
