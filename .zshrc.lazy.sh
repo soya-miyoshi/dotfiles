@@ -2,7 +2,8 @@ set -o vi
 setopt inc_append_history
 setopt share_history
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+alias reload="source ~/.zshrc"
+
 eval "$(saml2aws --completion-script-zsh)"
 
 # rbenvの設定
@@ -84,3 +85,9 @@ function peco-src () {
 }
 zle -N peco-src
 bindkey '^g' peco-src
+
+zinit wait lucid blockf light-mode for \
+    @'zsh-users/zsh-autosuggestions' \
+    @'zsh-users/zsh-completions' \
+    @'zdharma-continuum/fast-syntax-highlighting' \
+    @'b4b4r07/enhancd'
