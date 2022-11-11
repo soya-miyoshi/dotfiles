@@ -14,6 +14,9 @@ fi
 # rbenvの設定
 eval "$(rbenv init -)"
 
+# zinitの読み込み
+source "$(ghq root)/github.com/zdharma-continuum/zinit/zinit.zsh"
+
 # cluster update用のgithub token
 source $HOME/private-dotfiles/.tokens 
 
