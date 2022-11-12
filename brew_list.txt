@@ -3,3 +3,4 @@ coreutils
 findutils
 gnu-sed
 grep
+peco
