@@ -12,3 +12,5 @@
 	useHttpPath = true
 [commit]
 	verbose = true
+[merge]
+	conflictStyle = diff3
