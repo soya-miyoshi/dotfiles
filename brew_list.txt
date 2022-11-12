@@ -1,1 +1,5 @@
 ghq
+coreutils
+findutils
+gnu-sed
+grep

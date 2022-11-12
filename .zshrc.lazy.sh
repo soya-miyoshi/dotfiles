@@ -18,7 +18,6 @@ export HISTSIZE=10000
 
 # AWSのデフォルトプロファイルを設定
 source $HOME/private-dotfiles/.aws-default-profile
-
 # simlimkを表示する
 alias mylink="find $HOME -type l -maxdepth 1"
 alias unlink="find $HOME -type l -maxdepth 1 | xargs -I% unlink %"
@@ -64,6 +63,49 @@ alias hf="helmfile"
 export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+case "$OSTYPE" in
+    linux*)
+        (( ${+commands[wslview]} )) && alias open='wslview'
+
+        if (( ${+commands[win32yank.exe]} )); then
+            alias pp='win32yank.exe -i'
+            alias p='win32yank.exe -o'
+        elif (( ${+commands[xsel]} )); then
+            alias pp='xsel -bi'
+            alias p='xsel -b'
+        fi
+    ;;
+    msys)
+        alias cmake='command cmake -G"Unix Makefiles"'
+        alias pp='cat >/dev/clipboard'
+        alias p='cat /dev/clipboard'
+    ;;
+    darwin*)
+        alias pp='pbcopy'
+        alias p='pbpaste'
+        alias chrome='open -a "Google Chrome"'
+        (( ${+commands[gdate]} )) && alias date='gdate'
+        (( ${+commands[gls]} )) && alias ls='gls --color=auto'
+        (( ${+commands[gmkdir]} )) && alias mkdir='gmkdir'
+        (( ${+commands[gcp]} )) && alias cp='gcp -i'
+        (( ${+commands[gmv]} )) && alias mv='gmv -i'
+        (( ${+commands[grm]} )) && alias rm='grm -i'
+        (( ${+commands[gdu]} )) && alias du='gdu'
+        (( ${+commands[ghead]} )) && alias head='ghead'
+        (( ${+commands[gtail]} )) && alias tail='gtail'
+        (( ${+commands[gsed]} )) && alias sed='gsed'
+        (( ${+commands[ggrep]} )) && alias grep='ggrep'
+        (( ${+commands[gfind]} )) && alias find='gfind'
+        (( ${+commands[gdirname]} )) && alias dirname='gdirname'
+        (( ${+commands[gxargs]} )) && alias xargs='gxargs'
+    ;;
+esac
+
+zshaddhistory() {
+    local line="${1%%$'\n'}"
+    [[ ! "$line" =~ "^(cd|jj?|lazygit|la|ll|ls|rm|rmdir)($| )" ]]
+}
 
 # pecoの活用1
 # ctrl + r で過去に実行したコマンドを選択できるようにする。
