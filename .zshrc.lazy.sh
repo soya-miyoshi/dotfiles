@@ -6,6 +6,22 @@ alias reload="source ~/.zshrc"
 
 eval "$(saml2aws --completion-script-zsh)"
 
+#navi
+
+__navi_search() {
+    LBUFFER="$(navi --print --query="$LBUFFER")"
+    zle reset-prompt
+}
+__navi_atload() {
+    export NAVI_CONFIG="$XDG_CONFIG_HOME/navi/config.yaml"
+
+    zle -N __navi_search
+    bindkey '^N' __navi_search
+}
+zinit wait lucid light-mode as'program' from'gh-r' for \
+    atload'__navi_atload' \
+    @'denisidoro/navi'
+
 # rbenvの設定
 eval "$(rbenv init -)"
 
