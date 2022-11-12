@@ -2,7 +2,11 @@
 # if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 #   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 # fi
-eval "$(brew shellenv)"
+if [[ $(uname -m) == 'arm64' ]]; then
+  eval $(/opt/homebrew/bin/brew shellenv) 
+else
+  eval "$(brew shellenv)"
+fi
 
 # zinitの読み込み
 ZDOTDIR="$(ghq root)/github.com/soya2222/dotfiles"
