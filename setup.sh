@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# git clone --recursive https://github.com/sorin-ionescu/prezto.git "$HOME/dotfiles/.zprezto"
+mkdir $(ghq root)/github.com/soya2222/dotfiles 
+ln -s $(ghq root)/github.com/soya2222/dotfiles $HOME
 
 DOT_FILES=`ls .* | grep -E '^\..*' | grep -v '^.git:$' | grep -v '.swp$' | grep -v 'gitignore$'| sed -e 's/://g' | grep -v '^\.$' | grep -v '^\.\.$'`
 echo $DOT_FILES
