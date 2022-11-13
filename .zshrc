@@ -29,14 +29,14 @@ setopt PROMPT_SUBST ; PS1='%F{green}%n@%m%f: %F{cyan}%~%f %F{red}$(__git_ps1 "(%
 \$ '
 
 # 現在のkubectlのコンテキスト等を追加
-source ~/.kube-ps1/kube-ps1.sh
-function get_cluster_short() {
-  echo "$1" | cut -d . -f1
-}
-KUBE_PS1_CLUSTER_FUNCTION=get_cluster_short
-KUBE_PS1_SUFFIX=') '
-export PS1='$(kube_ps1)'$PS1
-
+#source ~/.kube-ps1/kube-ps1.sh
+#function get_cluster_short() {
+#  echo "$1" | cut -d . -f1
+#}
+#KUBE_PS1_CLUSTER_FUNCTION=get_cluster_short
+#KUBE_PS1_SUFFIX=') '
+#export PS1='$(kube_ps1)'$PS1
+#
 zinit wait lucid light-mode as'null' \
     atinit'source "$ZDOTDIR/.zshrc.lazy.sh"' \
     for 'zdharma-continuum/null'

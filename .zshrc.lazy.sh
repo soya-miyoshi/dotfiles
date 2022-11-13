@@ -28,6 +28,10 @@ eval "$(rbenv init -)"
 # cluster update用のgithub token
 source $HOME/private-dotfiles/.tokens
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 # スペースで始まるコマンドはHistoryに入れない
 export HISTCONTROL=ignoreboth
 export HISTSIZE=10000
