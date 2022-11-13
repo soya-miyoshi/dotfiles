@@ -5,3 +5,4 @@ gnu-sed
 grep
 peco
 tmux
+fzf
