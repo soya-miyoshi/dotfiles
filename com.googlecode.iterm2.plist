@@ -32,24 +32,6 @@
 			<key>Text</key>
 			<string></string>
 		</dict>
-		<key>0x62-0x40000-0xb</key>
-		<dict>
-			<key>Action</key>
-			<integer>10</integer>
-			<key>Label</key>
-			<string></string>
-			<key>Text</key>
-			<string>b</string>
-		</dict>
-		<key>0x66-0x40000-0x3</key>
-		<dict>
-			<key>Action</key>
-			<integer>10</integer>
-			<key>Label</key>
-			<string></string>
-			<key>Text</key>
-			<string>f</string>
-		</dict>
 		<key>0x75-0x40000-0x20</key>
 		<dict>
 			<key>Action</key>
