@@ -142,7 +142,62 @@ function peco-src () {
   zle clear-screen
 }
 zle -N peco-src
-bindkey '^g' peco-src
+bindkey '^p' peco-src
+
+tmux source-file ~/.tmux.conf
+
+# Gitリポジトリを列挙する
+widget::ghq::source() {
+    local session color icon green="GGG" blue="BBB" reset="RRR" checked="CCC" unchecked="UUU"
+    local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
+
+    ghq list | sed "s/github.com\///" | sort | while read -r repo; do
+        session="${repo//[:. ]/-}"
+        color="$blue"
+        icon="$unchecked"
+        if (( ${+sessions[(r)$session]} )); then
+            color="$green"
+            icon="$checked"
+        fi
+        printf "%s\n" "$repo"
+    done
+}
+# GitリポジトリをFZFで選択する
+widget::ghq::select() {
+    local root="$(ghq root)"
+    widget::ghq::source | fzf --exit-0 --preview="fzf-preview-git ${(q)root}/{+2}" --preview-window="right:60%" | cut -d' ' -f2-
+}
+# FZFで選択されたGitリポジトリにTmuxセッションを立てる
+widget::ghq::session() {
+    local selected="$(widget::ghq::select)"
+    if [ -z "$selected" ]; then
+        return
+    fi
+
+    local repo_dir="$(ghq list --exact --full-path "$selected")"
+    local session_name="${selected//[:. ]/-}"
+    echo $session_name
+
+    if [ -z "$TMUX" ]; then
+        # Tmuxの外にいる場合はセッションにアタッチする
+        BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
+        cd $repo_dir
+        zle accept-line
+    elif [ "$(tmux display-message -p "#S")" = "$session_name" ] && [ "$PWD" != "$repo_dir" ]; then
+        # 選択されたGitリポジトリのセッションにすでにアタッチしている場合はGitリポジトリのルートディレクトリに移動する
+        BUFFER="cd ${(q)repo_dir}"
+        zle accept-line
+    else
+        # 別のTmuxセッションにいる場合はセッションを切り替える
+        tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
+        tmux switch-client -t "$session_name"
+    fi
+    zle -R -c # refresh screen
+}
+zle -N widget::ghq::session
+
+# C-g で呼び出せるようにする
+bindkey "^G" widget::ghq::session
 
 zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \

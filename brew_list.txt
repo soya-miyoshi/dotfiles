@@ -4,3 +4,4 @@ findutils
 gnu-sed
 grep
 peco
+tmux

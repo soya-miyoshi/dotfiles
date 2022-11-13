@@ -1,8 +1,8 @@
 #!/bin/bash
 
 mkdir -p $(ghq root)/github.com/soya2222
-ln -s $HOME/dotfiles $(ghq root)/github.com/soya2222/dotfiles 
-ghq get zdharma-continuum/zinit
+ln -s $(ghq root)/github.com/soya2222/dotfiles $HOME
+# ghq get zdharma-continuum/zinit
 
 DOT_FILES=`ls .* | grep -E '^\..*' | grep -v '^.git:$' | grep -v '.swp$' | grep -v 'gitignore$'| sed -e 's/://g' | grep -v '^\.$' | grep -v '^\.\.$'`
 echo $DOT_FILES
