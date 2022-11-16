@@ -14,3 +14,5 @@
 	verbose = true
 [merge]
 	conflictStyle = diff3
+[push]
+	autoSetupRemote = true
