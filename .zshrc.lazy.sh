@@ -1,8 +1,11 @@
-set -o vi
+# set -o vi
 setopt inc_append_history
 setopt share_history
+bindkey -e
 
 alias reload="source ~/.zshrc"
+alias v="view"
+alias less="view"
 
 eval "$(saml2aws --completion-script-zsh)"
 

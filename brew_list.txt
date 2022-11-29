@@ -7,3 +7,4 @@ peco
 tmux
 fzf
 nvm
+thefuck
