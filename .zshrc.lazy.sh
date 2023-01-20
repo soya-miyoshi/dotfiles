@@ -63,7 +63,8 @@ export PATH="${KREW_ROOT:-$HOME}/.krew/bin:$PATH"
 # unset AQUA_GLOBAL_CONFIG=${HOME}/sre-docs/external/aws/eks/aqua.yaml
 
 # AWS login 
-alias al="saml2aws login --skip-prompt --session-duration=10000 --force"
+alias alc="saml2aws login --skip-prompt --role='arn:aws:iam::057575985710:role/freee-sso-admin' --profile='saml-cfo'"
+alias ale="saml2aws login --skip-prompt --role='arn:aws:iam::148248004276:role/freee-sso-admin' --profile='saml-e2e'"
 alias alq="saml2aws login --skip-prompt --force"
 
 # Docker build を並列で実行する設定
