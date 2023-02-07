@@ -8,3 +8,4 @@ tmux
 fzf
 nvm
 thefuck
+act
