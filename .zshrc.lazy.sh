@@ -6,6 +6,7 @@ bindkey -e
 alias reload="source ~/.zshrc"
 alias v="view"
 alias less="view"
+alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 
 eval "$(saml2aws --completion-script-zsh)"
 
