@@ -4,8 +4,9 @@ setopt share_history
 bindkey -e
 
 alias reload="source ~/.zshrc"
-alias v="view"
-alias less="view"
+alias v="nvim"
+alias vim="nvim"
+alias less="nvim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 
 eval "$(saml2aws --completion-script-zsh)"
