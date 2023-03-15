@@ -9,3 +9,4 @@ fzf
 nvm
 thefuck
 act
+neovim
