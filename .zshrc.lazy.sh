@@ -44,6 +44,7 @@ export HISTSIZE=10000
 source $HOME/private-dotfiles/.aws-default-profile
 # simlimkを表示する
 alias mylink="find $HOME -type l -maxdepth 1"
+alias myconfig="find $HOME/.config -type l"
 alias rmlink="find $HOME -type l -maxdepth 1 | xargs -I% unlink %"
 
 # kubectx

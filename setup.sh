@@ -12,6 +12,12 @@ do
     ln -s $HOME/dotfiles/$file $HOME/$file
 done
 
+DOT_CONFIGS=`ls ./dotconfig`
+for folder in ${DOT_CONFIGS[@]}
+do
+    ln -s $HOME/dotfiles/dotconfig/$folder $HOME/.config/$folder
+done
+
 # for rcfile in "${ZDOTDIR:-$HOME}"/.zprezto/runcoms/^README.md; do
 #   ln -s "$rcfile" "${ZDOTDIR:-$HOME}/.${rcfile:t}"
 # done
