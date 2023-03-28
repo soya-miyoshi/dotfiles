@@ -1,5 +1,6 @@
 # HOW TO SETUP
 ```
-./setup.sh
+$ ./brew.sh
+$ ./setup.sh
 ```
 
