@@ -1,1 +1,0 @@
-/Users/miyoshi-soya/.zsh
