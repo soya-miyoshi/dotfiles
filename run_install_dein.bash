@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-set -x
 # shellcheck source=./scripts/common.bash
 source "xdg_helper.bash"
 
+set -x
 if [ -d "$XDG_DATA_HOME/dein/repos/github.com/Shougo/dein.vim" ]; then
     echo "dein.vim is already installed."
     git -C "$XDG_DATA_HOME/dein/repos/github.com/Shougo/dein.vim" pull
