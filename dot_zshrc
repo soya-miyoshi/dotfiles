@@ -10,7 +10,7 @@ zshaddhistory() {
 }
 
 # zinitの読み込み
-ZDOTDIR="$(ghq root)/github.com/soya2222/dotfiles"
+ZDOTDIR="$HOME"
 source "$(ghq root)/github.com/zdharma-continuum/zinit/zinit.zsh"
 
 # git-completionの読み込み

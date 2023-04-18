@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source xdg_helper.bash
+source .xdg_helper.bash
 set -x
 
 for directory in `ls .dotconfig`
