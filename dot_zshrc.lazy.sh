@@ -5,8 +5,8 @@ bindkey -e
 
 alias reload="source ~/.zshrc"
 alias v="nvim"
-alias vim="nvim"
-alias less="nvim -R"
+alias vim="vim"
+alias less="vim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 
 eval "$(saml2aws --completion-script-zsh)"
