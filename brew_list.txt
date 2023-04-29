@@ -13,3 +13,4 @@ neovim
 saml2aws
 goenv
 rbenv
+tfenv
