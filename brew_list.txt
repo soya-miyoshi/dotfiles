@@ -11,3 +11,5 @@ thefuck
 act
 neovim
 saml2aws
+goenv
+rbenv
