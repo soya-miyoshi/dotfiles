@@ -10,3 +10,4 @@ nvm
 thefuck
 act
 neovim
+saml2aws
