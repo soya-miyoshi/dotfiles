@@ -14,3 +14,4 @@ saml2aws
 goenv
 rbenv
 tfenv
+awscli
