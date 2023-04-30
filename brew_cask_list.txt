@@ -1,2 +1,6 @@
 iterm2
 google-chrome
+contexts
+clipy
+karabiner-elements
+visual-studio-code
