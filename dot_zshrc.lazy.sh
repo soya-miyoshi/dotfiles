@@ -30,8 +30,9 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
 # rbenvの設定
 eval "$(rbenv init -)"
 
-# cluster update用のgithub token
+# private-dotfiles
 source $HOME/private-dotfiles/.tokens
+export PATH="${HOME}/private-dotfiles/scripts:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
