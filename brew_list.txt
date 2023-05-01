@@ -16,3 +16,4 @@ rbenv
 tfenv
 awscli
 docker
+docker-compose
