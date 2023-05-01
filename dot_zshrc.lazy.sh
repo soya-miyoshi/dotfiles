@@ -214,5 +214,4 @@ bindkey "^G" widget::ghq::session
 zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
     @'zsh-users/zsh-completions' \
-    @'zdharma-continuum/fast-syntax-highlighting' \
-    @'b4b4r07/enhancd'
+    @'zdharma-continuum/fast-syntax-highlighting'
