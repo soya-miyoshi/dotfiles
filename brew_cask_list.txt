@@ -4,3 +4,4 @@ contexts
 clipy
 karabiner-elements
 visual-studio-code
+session-manager-plugin
