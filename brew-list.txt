@@ -7,13 +7,9 @@ peco
 tmux
 fzf
 nvm
-thefuck
-act
 neovim
-saml2aws
-goenv
-rbenv
 tfenv
 awscli
 docker
 docker-compose
+

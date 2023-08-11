@@ -218,3 +218,6 @@ zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
     @'zsh-users/zsh-completions' \
     @'zdharma-continuum/fast-syntax-highlighting'
+
+# zinit ice wait lucid blockf from"gh" ver"v2.2.1"
+# zinit light 'soya-miyoshi/enhancd'
