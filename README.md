@@ -1,5 +1,5 @@
 # HOW TO SETUP
-I use [Chezmioi](https://www.chezmoi.io/) to manage my dotfiles. 
+I use [Chezmoi](https://www.chezmoi.io/) to manage my dotfiles. 
 
 ```
 $ brew install chezmoi
