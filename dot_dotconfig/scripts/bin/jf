@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+query="${1:-.}"
+
+file="$(mktemp)"
+cat >"$file"
+result="$(fzf --print-query --query="$query" --preview="jq {q} ${(q)file} | bat --color=always --plain --language=json" --preview-window='down,99%')"
+jq "$result" "$file"
+rm "$file"

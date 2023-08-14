@@ -1,0 +1,6 @@
+#!/bin/sh
+file="$(mktemp)"
+cat >"$file"
+"$EDITOR" "$file" </dev/tty >/dev/tty
+cat "$file"
+rm "$file"
