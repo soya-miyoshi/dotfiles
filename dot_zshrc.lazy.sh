@@ -219,5 +219,8 @@ zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-completions' \
     @'zdharma-continuum/fast-syntax-highlighting'
 
-# zinit ice wait lucid blockf from"gh" ver"v2.2.1"
-# zinit light 'soya-miyoshi/enhancd'
+zinit ice wait lucid blockf
+zinit light changyuheng/zsh-interactive-cd
+
+zinit ice wait lucid blockf
+zinit light 'b4b4r07/enhancd'
