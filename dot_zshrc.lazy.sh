@@ -9,10 +9,6 @@ alias vim="vim"
 alias less="vim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 
-eval "$(saml2aws --completion-script-zsh)"
-
-#navi
-
 __navi_search() {
     LBUFFER="$(navi --print --query="$LBUFFER")"
     zle reset-prompt
@@ -52,8 +48,6 @@ alias mylink="find $HOME -type l -maxdepth 1"
 alias myconfig="find $HOME/.config -type l"
 alias rmlink="find $HOME -type l -maxdepth 1 | xargs -I% unlink %"
 
-# kubectx
-export PATH=~/.kubectx:$PATH
 
 # goenv のパス
 # brew install goenv した
@@ -61,18 +55,6 @@ export GOENV_ROOT="$HOME/.goenv"
 export PATH="$GOENV_ROOT/bin:$PATH"
 eval "$(goenv init -)"
 
-# lsec2
-export PATH="${LSEC2_ROOT:-$HOME}/lsec2/bin:$PATH"
-# krew
-export PATH="${KREW_ROOT:-$HOME}/.krew/bin:$PATH"
-# aqua
-# export PATH="${HOME}/.local/share/aquaproj-aqua/bin:$PATH"
-# unset AQUA_GLOBAL_CONFIG=${HOME}/sre-docs/external/aws/eks/aqua.yaml
-
-# AWS login 
-alias alc="saml2aws login --skip-prompt --role='arn:aws:iam::057575985710:role/freee-sso-admin' --session-duration 10800 --profile='saml-cfo'"
-alias ale="saml2aws login --skip-prompt --role='arn:aws:iam::148248004276:role/freee-sso-admin' --session-duration 21600 --profile='saml-e2e'"
-alias alq="saml2aws login --skip-prompt --force"
 
 # Docker build を並列で実行する設定
 export DOCKER_BUILDKIT=1
