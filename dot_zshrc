@@ -18,7 +18,6 @@ fpath=(~/.zsh $fpath)
 zstyle ':completion:*:*:git:*' script ~/.zsh/completion/git-completion.bash
 autoload -Uz compinit && compinit
 
-
 # git-promptの読み込み
 source $ZDOTDIR/.zsh/completion/git-prompt.sh
 GIT_PS1_SHOWDIRTYSTATE=true
