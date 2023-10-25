@@ -8,6 +8,7 @@ alias v="nvim"
 alias vim="vim"
 alias less="vim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
+alias exportenv="export $(cat .env | xargs -L 1)"
 
 __navi_search() {
     LBUFFER="$(navi --print --query="$LBUFFER")"
