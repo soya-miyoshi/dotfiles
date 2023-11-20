@@ -8,6 +8,7 @@ alias v="nvim"
 alias vim="vim"
 alias less="vim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
+alias encs3='java -jar ~/.dotbin/amazon-s3-encryption-cli-client-1.0.1-alpha.jar'
 alias exportenv='export $(cat .env | xargs -L 1)'
 
 __navi_search() {
