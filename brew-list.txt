@@ -13,3 +13,6 @@ awscli
 docker
 docker-compose
 maven
+kayac/tap/ecspresso
+fujiwara/tap/tfstate-lookup
+telnet
