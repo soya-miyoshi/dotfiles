@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-cat brew_list.txt | xargs brew install
+cat brew-list.txt | xargs brew install
