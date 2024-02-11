@@ -32,6 +32,9 @@ eval "$(rbenv init -)"
 source $HOME/private-dotfiles/.tokens
 export PATH="${HOME}/private-dotfiles/scripts:$PATH"
 
+# scripts
+export PATH="${HOME}/.dotconfigs/scripts/bin:$PATH"
+
 # java 
 export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
