@@ -148,12 +148,16 @@ bindkey '^p' peco-src
 
 tmux source-file ~/.tmux.conf
 
+### FZF fzf-preview-git で必要
+export FZF_DEFAULT_OPTS='--reverse --border --ansi --bind="ctrl-d:print-query,ctrl-p:replace-query"'
+export FZF_DEFAULT_COMMAND='fd --hidden --color=always'
+
 # Gitリポジトリを列挙する
 widget::ghq::source() {
-    local session color icon green="GGG" blue="BBB" reset="RRR" checked="CCC" unchecked="UUU"
+    local session color icon green="\e[32m" blue="\e[34m" reset="\e[m" checked="✔" unchecked="✖"
     local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
 
-    ghq list | sed "s/github.com\///" | sort | while read -r repo; do
+    ghq list | sort | while read -r repo; do
         session="${repo//[:. ]/-}"
         color="$blue"
         icon="$unchecked"
@@ -161,7 +165,7 @@ widget::ghq::source() {
             color="$green"
             icon="$checked"
         fi
-        printf "%s\n" "$repo"
+        printf "$color$icon %s$reset\n" "$repo"
     done
 }
 # GitリポジトリをFZFで選択する
@@ -200,6 +204,7 @@ zle -N widget::ghq::session
 
 # C-g で呼び出せるようにする
 bindkey "^G" widget::ghq::session
+
 
 zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
