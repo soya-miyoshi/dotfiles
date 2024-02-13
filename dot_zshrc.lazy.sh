@@ -10,6 +10,9 @@ alias less="vim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 alias encs3='java -jar ~/.dotbin/amazon-s3-encryption-cli-client-1.0.1-alpha.jar'
 alias exportenv='export $(cat .env | xargs -L 1)'
+alias c='chezmoi'
+alias ca='chezmoi apply'
+alias g='git'
 
 __navi_search() {
     LBUFFER="$(navi --print --query="$LBUFFER")"
@@ -149,7 +152,8 @@ bindkey '^p' peco-src
 tmux source-file ~/.tmux.conf
 
 ### FZF fzf-preview-git で必要
-export FZF_DEFAULT_OPTS='--reverse --border --ansi --bind="ctrl-d:print-query,ctrl-p:replace-query"'
+# export FZF_DEFAULT_OPTS='--reverse --border --ansi --bind="ctrl-d:print-query,ctrl-p:replace-query"'
+export FZF_DEFAULT_OPTS='--border --ansi --bind="ctrl-d:print-query,ctrl-p:replace-query"'
 export FZF_DEFAULT_COMMAND='fd --hidden --color=always'
 
 # Gitリポジトリを列挙する
