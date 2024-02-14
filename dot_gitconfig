@@ -3,7 +3,7 @@
 	name = Soya Miyoshi 
 [alias]
 	co = checkout
-	s = status
+	s = status .
 [init]
 	defaultBranch = main
 [credential]
