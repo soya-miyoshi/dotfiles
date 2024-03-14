@@ -4,6 +4,7 @@
 [alias]
 	co = checkout
 	s = status .
+        st = status
 [init]
 	defaultBranch = main
 [credential]
