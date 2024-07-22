@@ -17,3 +17,4 @@ kayac/tap/ecspresso
 fujiwara/tap/tfstate-lookup
 telnet
 jsonnet
+aqua
