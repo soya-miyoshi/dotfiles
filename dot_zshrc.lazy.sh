@@ -72,7 +72,8 @@ alias k="kubectl"
 #source <(kubectl completion zsh)
 
 # terraform のalias
-alias t="terraform"
+# alias t="terraform"
+alias t=~/.local/share/aquaproj-aqua/bin/terraform
 
 alias g="git"
 
@@ -215,11 +216,15 @@ bindkey "^G" widget::ghq::session
 
 zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
-    @'zsh-users/zsh-completions' \
     @'zdharma-continuum/fast-syntax-highlighting'
+    # @'zsh-users/zsh-completions' \
+    # @'zdharma-continuum/fast-syntax-highlighting'
 
 zinit ice wait lucid blockf
 zinit light changyuheng/zsh-interactive-cd
 
 zinit ice wait lucid blockf
 zinit light 'b4b4r07/enhancd'
+
+zinit ice wait lucid blockf
+zinit light Aloxaf/fzf-tab
