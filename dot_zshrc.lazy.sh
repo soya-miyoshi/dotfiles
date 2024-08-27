@@ -4,15 +4,31 @@ setopt share_history
 bindkey -e
 
 alias reload="source ~/.zshrc"
+alias c='chezmoi'
 alias v="nvim"
 alias vim="vim"
 alias less="vim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 alias encs3='java -jar ~/.dotbin/amazon-s3-encryption-cli-client-1.0.1-alpha.jar'
 alias exportenv='export $(cat .env | xargs -L 1)'
-alias c='chezmoi'
-alias ca='chezmoi apply'
 alias g='git'
+alias gs='git status'
+# add modified file using `git status | grep modified | awk '{print $2}' | xargs git add`
+alias gam='git add $(git status | grep modified | awk '\''{print $2}'\'')'
+alias gco='git checkout'
+alias gcm='git commit -m'
+alias gd='git checkout develop'
+alias ca='chezmoi apply'
+alias gr='git fetch origin develop && git rebase origin/develop'
+alias t=~/.local/share/aquaproj-aqua/bin/terraform
+alias tpt='t plan --target'
+
+# function to create a new branch with argument as branch name
+function gnb() {
+  git checkout develop && git pull && git checkout -b $1
+}
+# call gnb using alias gn
+alias gn=gnb
 
 __navi_search() {
     LBUFFER="$(navi --print --query="$LBUFFER")"
@@ -70,12 +86,6 @@ export DOCKER_BUILDKIT=1
 # kubectl の補完設定
 alias k="kubectl"
 #source <(kubectl completion zsh)
-
-# terraform のalias
-# alias t="terraform"
-alias t=~/.local/share/aquaproj-aqua/bin/terraform
-
-alias g="git"
 
 # helm の補完設定
 alias h="helm"
@@ -213,6 +223,31 @@ zle -N widget::ghq::session
 # C-g で呼び出せるようにする
 bindkey "^G" widget::ghq::session
 
+# Gitブランチを列挙する
+widget::git::source() {
+    git branch --all --color=always | sed 's/^[ *]*//;s/ ->.*//;s/HEAD/HEAD /' | sort | while read -r branch; do
+        printf "%s\n" "$branch"
+    done
+}
+
+# GitブランチをFZFで選択する
+widget::git::select() {
+    widget::git::source | fzf --exit-0 | cut -d' ' -f2-
+}
+
+# FZFで選択されたGitブランチにswitchする
+widget::git::checkout() {
+    printf "git switch "
+    local selected="$(widget::git::select)"
+    if [ -n "$selected" ]; then
+        BUFFER="git switch ${(q)selected}"
+        zle accept-line
+    fi
+}
+
+# C-e で呼び出せるようにする
+zle -N widget::git::checkout
+bindkey "^U" widget::git::checkout
 
 zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
