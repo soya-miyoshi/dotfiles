@@ -22,13 +22,8 @@ alias ca='chezmoi apply'
 alias gr='git fetch origin develop && git rebase origin/develop'
 alias t=~/.local/share/aquaproj-aqua/bin/terraform
 alias tpt='t plan --target'
-
-# function to create a new branch with argument as branch name
-function gnb() {
-  git checkout develop && git pull && git checkout -b $1
-}
-# call gnb using alias gn
-alias gn=gnb
+alias gn='git checkout develop && git pull && git checkout -b'
+alias codechezoi='code ~/.local/share/chezmoi'
 
 __navi_search() {
     LBUFFER="$(navi --print --query="$LBUFFER")"
@@ -49,6 +44,7 @@ eval "$(rbenv init -)"
 
 # private-dotfiles
 source $HOME/private-dotfiles/.tokens
+source $HOME/private-dotfiles/dot_zshrc.private
 export PATH="${HOME}/private-dotfiles/scripts:$PATH"
 
 # scripts
