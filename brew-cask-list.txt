@@ -7,3 +7,4 @@ visual-studio-code
 session-manager-plugin
 docker
 rectangle
+git-credential-manager-core
