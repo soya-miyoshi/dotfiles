@@ -243,7 +243,7 @@ widget::git::checkout() {
 
 # C-e で呼び出せるようにする
 zle -N widget::git::checkout
-bindkey "^U" widget::git::checkout
+bindkey "^s" widget::git::checkout
 
 zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
