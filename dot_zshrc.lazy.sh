@@ -255,6 +255,14 @@ zinit wait lucid blockf light-mode for \
 zinit ice wait lucid blockf
 zinit light mrjohannchang/zsh-interactive-cd
 
+# nvm use を自動で実行
+cd() {
+    enhancd "$@"
+    if [[ -f .nvmrc ]]; then
+        nvm use
+    fi
+}
+
 zinit ice wait lucid blockf
 zinit light babarot/enhancd
 
