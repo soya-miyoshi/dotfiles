@@ -16,6 +16,7 @@ alias gs='git status'
 # add modified file using `git status | grep modified | awk '{print $2}' | xargs git add`
 alias gam='git add $(git status | grep modified | awk '\''{print $2}'\'')'
 alias gco='git checkout'
+alias gc='git commit'
 alias gcm='git commit -m'
 alias gd='git checkout develop'
 alias ca='chezmoi apply'
