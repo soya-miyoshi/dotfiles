@@ -253,10 +253,10 @@ zinit wait lucid blockf light-mode for \
     # @'zdharma-continuum/fast-syntax-highlighting'
 
 zinit ice wait lucid blockf
-zinit light changyuheng/zsh-interactive-cd
+zinit light mrjohannchang/zsh-interactive-cd
 
 zinit ice wait lucid blockf
-zinit light 'b4b4r07/enhancd'
+zinit light babarot/enhancd
 
 zinit ice wait lucid blockf
 zinit light Aloxaf/fzf-tab
