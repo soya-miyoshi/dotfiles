@@ -93,8 +93,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
-# aqua のパス
-export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
+# aqua でインストールされたものを優先的に使う設定
+# export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
 
 case "$OSTYPE" in
     linux*)
@@ -255,16 +255,10 @@ zinit wait lucid blockf light-mode for \
 zinit ice wait lucid blockf
 zinit light mrjohannchang/zsh-interactive-cd
 
-# nvm use を自動で実行
-cd() {
-    enhancd "$@"
-    if [[ -f .nvmrc ]]; then
-        nvm use
-    fi
-}
-
 zinit ice wait lucid blockf
 zinit light babarot/enhancd
+# nvm use を cd 後に実行する
+export ENHANCD_HOOK_AFTER_CD="([ -f '.nvmrc' ] && nvm use)"
 
 zinit ice wait lucid blockf
 zinit light Aloxaf/fzf-tab
