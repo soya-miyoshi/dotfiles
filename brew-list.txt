@@ -18,3 +18,4 @@ fujiwara/tap/tfstate-lookup
 telnet
 jsonnet
 aquaproj/aqua/aqua
+rustup

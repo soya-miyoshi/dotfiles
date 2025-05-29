@@ -25,6 +25,7 @@ alias gr='git fetch origin develop && git rebase origin/develop'
 alias tpt='t plan --target'
 alias gn='git checkout develop && git pull && git checkout -b'
 alias codechezoi='code ~/.local/share/chezmoi'
+alias n='npm run'
 
 __navi_search() {
     LBUFFER="$(navi --print --query="$LBUFFER")"
@@ -53,6 +54,9 @@ export PATH="${HOME}/.dotconfig/scripts/bin:$PATH"
 
 # java 
 export PATH="/usr/local/opt/openjdk/bin:$PATH"
+
+# rust
+export PATH="/usr/local/opt/rustup/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
