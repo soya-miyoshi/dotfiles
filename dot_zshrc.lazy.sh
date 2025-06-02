@@ -57,6 +57,9 @@ export PATH="/usr/local/opt/openjdk/bin:$PATH"
 
 # rust
 export PATH="/usr/local/opt/rustup/bin:$PATH"
+export RUSTUP_HOME="$HOME/.rustup"
+export CARGO_HOME="$HOME/.cargo"
+export PATH="$CARGO_HOME/bin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
@@ -266,3 +269,5 @@ export ENHANCD_HOOK_AFTER_CD="([ -f '.nvmrc' ] && nvm use)"
 
 zinit ice wait lucid blockf
 zinit light Aloxaf/fzf-tab
+
+[ -f "/Users/soyamiyoshi/.ghcup/env" ] && . "/Users/soyamiyoshi/.ghcup/env" # ghcup-env
