@@ -61,6 +61,9 @@ export RUSTUP_HOME="$HOME/.rustup"
 export CARGO_HOME="$HOME/.cargo"
 export PATH="$CARGO_HOME/bin:$PATH"
 
+# huskell
+[ -f "/Users/soya/.ghcup/env" ] && . "/Users/soya/.ghcup/env" # ghcup-env
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && \. "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
