@@ -106,6 +106,16 @@ export NVM_DIR="$HOME/.nvm"
 # aqua でインストールされたものを優先的に使う設定
 # export PATH="${AQUA_ROOT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aquaproj-aqua}/bin:$PATH"
 
+# 特定のポートのプロセスをkill
+kp() {
+  if [ -z "$1" ]; then
+    echo "Usage: kp <port>"
+    return 1
+  fi
+  lsof -ti tcp:"$1" | xargs -r kill -9
+}
+
+
 case "$OSTYPE" in
     linux*)
         (( ${+commands[wslview]} )) && alias open='wslview'
