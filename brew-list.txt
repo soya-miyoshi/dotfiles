@@ -19,3 +19,7 @@ telnet
 jsonnet
 aquaproj/aqua/aqua
 rustup
+direnv
+bitwarden-cli
+sops
+age

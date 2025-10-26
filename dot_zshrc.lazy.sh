@@ -44,6 +44,9 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
 # rbenvの設定
 eval "$(rbenv init -)"
 
+# direnv
+eval "$(direnv hook zsh)"
+
 # private-dotfiles
 source $HOME/private-dotfiles/.tokens
 source $HOME/private-dotfiles/dot_zshrc.private
@@ -284,3 +287,11 @@ zinit ice wait lucid blockf
 zinit light Aloxaf/fzf-tab
 
 [ -f "/Users/soyamiyoshi/.ghcup/env" ] && . "/Users/soyamiyoshi/.ghcup/env" # ghcup-env
+
+export LDFLAGS="-L/usr/local/opt/libffi/lib"
+export CPPFLAGS="-I/usr/local/opt/libffi/include"
+
+export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+export PKG_CONFIG_PATH="/usr/local/opt/libffi/lib/pkgconfig"
+
+export PATH="/Users/soyamiyoshi/.local/bin:$PATH"
