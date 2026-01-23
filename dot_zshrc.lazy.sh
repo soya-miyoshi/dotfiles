@@ -118,6 +118,59 @@ kp() {
   lsof -ti tcp:"$1" | xargs -r kill -9
 }
 
+# ECS Exec helper function
+# Usage:
+#   ecs_exec <task-id-or-arn> [container-name]
+#
+# Examples:
+#   ecs_exec arn:aws:ecs:ap-northeast-1:123456789:task/my-cluster/abc123def
+#   ecs_exec abc123def456
+#   ecs_exec abc123def456 wlmscpfs
+
+ecs_exec() {
+  local task_id="$1"
+  local container="$2"
+  local cluster=""
+
+  if [[ -z "$task_id" ]]; then
+    echo "Usage: ecs_exec <task-id-or-arn> [container-name]"
+    return 1
+  fi
+
+  # If it's a full ARN, extract cluster name
+  if [[ "$task_id" == arn:aws:ecs:* ]]; then
+    # ARN format: arn:aws:ecs:region:account:task/cluster-name/task-id
+    cluster=$(echo "$task_id" | cut -d'/' -f2)
+    task_id=$(echo "$task_id" | cut -d'/' -f3)
+  else
+    # Search for task across all clusters
+    echo "Searching for task $task_id across clusters..."
+    for c in $(aws ecs list-clusters --query 'clusterArns[*]' --output text); do
+      cluster_name=$(echo "$c" | cut -d'/' -f2)
+      if aws ecs describe-tasks --cluster "$cluster_name" --tasks "$task_id" \
+         --query 'tasks[0].taskArn' --output text 2>/dev/null | grep -q "$task_id"; then
+        cluster="$cluster_name"
+        echo "Found in cluster: $cluster"
+        break
+      fi
+    done
+
+    if [[ -z "$cluster" ]]; then
+      echo "Error: Task $task_id not found in any cluster"
+      return 1
+    fi
+  fi
+
+  # Build the command
+  local cmd="aws ecs execute-command --cluster $cluster --task $task_id --interactive --command /bin/sh"
+  if [[ -n "$container" ]]; then
+    cmd="$cmd --container $container"
+  fi
+
+  echo "Running: $cmd"
+  eval "$cmd"
+}
+
 
 case "$OSTYPE" in
     linux*)
