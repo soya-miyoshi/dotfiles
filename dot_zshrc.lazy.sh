@@ -3,6 +3,9 @@ setopt inc_append_history
 setopt share_history
 bindkey -e
 
+zinit ice wait lucid
+zinit light olets/zsh-abbr
+abbr add ghpr="git push -u origin HEAD && gh pr create --fill --base develop"
 alias reload="source ~/.zshrc"
 alias c='chezmoi'
 alias v="nvim"
