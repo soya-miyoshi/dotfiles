@@ -5,7 +5,7 @@ bindkey -e
 
 zinit ice wait lucid
 zinit light olets/zsh-abbr
-abbr add ghpr="git push -u origin HEAD && gh pr create --fill --base develop"
+alias ghpr="git add -A && git push -u origin HEAD && gh pr create --fill --base"
 alias reload="source ~/.zshrc"
 alias c='chezmoi'
 alias v="nvim"
@@ -20,7 +20,7 @@ alias gs='git status'
 alias gam='git add $(git status | grep modified | awk '\''{print $2}'\'')'
 alias gco='git checkout'
 alias gc='git commit'
-alias gcm='git commit -m'
+alias gcm='git add -A && git commit -m'
 alias gd='git checkout develop'
 alias ca='chezmoi apply'
 alias gr='git fetch origin develop && git rebase origin/develop'
