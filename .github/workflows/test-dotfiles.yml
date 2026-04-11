@@ -32,7 +32,7 @@ jobs:
         env:
           CHEZMOI_NO_SECRETS: "1"
         run: |
-          chezmoi init https://github.com/soya-miyoshi/dotfiles.git
+          chezmoi init --no-tty --promptDefaults https://github.com/soya-miyoshi/dotfiles.git
           echo "✓ chezmoi init succeeded"
 
       - name: Check chezmoi source directory
@@ -46,14 +46,14 @@ jobs:
         env:
           CHEZMOI_NO_SECRETS: "1"
         run: |
-          chezmoi apply --dry-run --verbose
+          chezmoi apply --no-tty --dry-run --verbose
           echo "✓ chezmoi apply --dry-run succeeded"
 
       - name: Apply dotfiles
         env:
           CHEZMOI_NO_SECRETS: "1"
         run: |
-          chezmoi apply --verbose
+          chezmoi apply --no-tty --verbose
           echo "✓ chezmoi apply succeeded"
 
       - name: Verify installation
@@ -122,7 +122,7 @@ jobs:
         env:
           CHEZMOI_NO_SECRETS: "1"
         run: |
-          chezmoi init https://github.com/soya-miyoshi/dotfiles.git
+          chezmoi init --no-tty --promptDefaults https://github.com/soya-miyoshi/dotfiles.git
           echo "✓ chezmoi init succeeded"
 
       - name: Check chezmoi source directory
@@ -136,14 +136,14 @@ jobs:
         env:
           CHEZMOI_NO_SECRETS: "1"
         run: |
-          chezmoi apply --dry-run --verbose
+          chezmoi apply --no-tty --dry-run --verbose
           echo "✓ chezmoi apply --dry-run succeeded"
 
       - name: Apply dotfiles
         env:
           CHEZMOI_NO_SECRETS: "1"
         run: |
-          chezmoi apply --verbose
+          chezmoi apply --no-tty --verbose
           echo "✓ chezmoi apply succeeded"
 
       - name: Verify installation

@@ -33,7 +33,7 @@ fi
 # Initialize chezmoi with your dotfiles
 echo ""
 echo "Initializing chezmoi with dotfiles..."
-chezmoi init https://github.com/soya-miyoshi/dotfiles.git
+chezmoi init --no-tty --promptDefaults https://github.com/soya-miyoshi/dotfiles.git
 
 if [ $? -eq 0 ]; then
     echo "✓ chezmoi init succeeded"
@@ -58,12 +58,12 @@ fi
 # Apply dotfiles (dry-run first to see what would happen)
 echo ""
 echo "Running chezmoi apply --dry-run..."
-chezmoi apply --dry-run
+chezmoi apply --no-tty --dry-run
 
 # Apply dotfiles for real
 echo ""
 echo "Applying dotfiles..."
-chezmoi apply --verbose
+chezmoi apply --no-tty --verbose
 
 if [ $? -eq 0 ]; then
     echo "✓ chezmoi apply succeeded"
