@@ -1,0 +1,83 @@
+# DO NOT EDIT in forked projects. This file is maintained in the upstream template repository.
+version: "3.8"
+
+services:
+  devcontainer:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        TZ: Asia/Tokyo
+        GIT_DELTA_VERSION: 0.18.2
+        ZSH_IN_DOCKER_VERSION: 1.2.0
+
+    container_name: dotfiles-devcontainer
+
+    # Run as node user
+    user: node
+
+    # Mount workspace and volumes
+    volumes:
+      # Workspace
+      - .:/workspace:cached
+
+      # Persist bash history
+      - bashhistory:/commandhistory
+
+      # Mount Claude Code configuration and credentials
+      - claude:/home/node/.claude
+
+      # Persist npm cache
+      - npm-cache:/home/node/.npm
+
+    # Expose application ports
+    ports:
+      # Web (Vite) ports — 10 slots
+      - "${PORT_WEB_1:-21001}:5173"
+      - "${PORT_WEB_2:-21101}:5174"
+      - "${PORT_WEB_3:-21201}:5175"
+      - "${PORT_WEB_4:-21301}:5176"
+      - "${PORT_WEB_5:-21401}:5177"
+      - "${PORT_WEB_6:-21501}:5178"
+      - "${PORT_WEB_7:-21601}:5179"
+      - "${PORT_WEB_8:-21701}:5180"
+      - "${PORT_WEB_9:-21801}:5181"
+      - "${PORT_WEB_10:-21901}:5182"
+      # API (Wrangler) ports — 10 slots
+      - "${PORT_API_1:-22001}:8787"
+      - "${PORT_API_2:-22101}:8788"
+      - "${PORT_API_3:-22201}:8789"
+      - "${PORT_API_4:-22301}:8790"
+      - "${PORT_API_5:-22401}:8791"
+      - "${PORT_API_6:-22501}:8792"
+      - "${PORT_API_7:-22601}:8793"
+      - "${PORT_API_8:-22701}:8794"
+      - "${PORT_API_9:-22801}:8795"
+      - "${PORT_API_10:-22901}:8796"
+
+    # Environment variables
+    environment:
+      - NODE_OPTIONS=--max-old-space-size=4096
+      - PATH=/usr/local/share/npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/node/.local/bin
+      - HTTPS_PROXY=${HTTPS_PROXY:-}
+      - HTTP_PROXY=${HTTP_PROXY:-}
+      - NO_PROXY=${NO_PROXY:-}
+
+    # Working directory
+    working_dir: /workspace
+
+    # Keep container running
+    tty: true
+    stdin_open: true
+
+    # Use zsh as default shell
+    command: /bin/zsh
+
+    # Restart policy
+    restart: unless-stopped
+
+volumes:
+  bashhistory:
+  npm-cache:
+  claude:
