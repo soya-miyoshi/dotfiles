@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Install/update dein.vim and its plugins.
+# Requires nvim (installed by run_once_before_02_install_brew_packages).
+set -euo pipefail
+
+{{ if .ci -}}
+echo "[install_dein] CI mode: skipping"
+exit 0
+{{- end }}
+
+if ! command -v nvim >/dev/null 2>&1; then
+    echo "[install_dein] nvim not installed, skipping"
+    exit 0
+fi
+
+# XDG defaults (xdg_helper.bash logic inlined to remove fragile sourcing)
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+DEIN_REPO="$XDG_DATA_HOME/dein/repos/github.com/Shougo/dein.vim"
+
+if [ -d "$DEIN_REPO" ]; then
+    echo "[install_dein] dein.vim already installed, updating..."
+    git -C "$DEIN_REPO" pull --quiet
+    nvim --headless \
+        -c ":call dein#update()" \
+        -c ":call clap#installer#download_binary()" \
+        -c ":qa" 2>/dev/null || true
+else
+    echo "[install_dein] installing dein.vim..."
+    INSTALLER="{{ .chezmoi.sourceDir }}/executable_install_dein.sh"
+    if [ -f "$INSTALLER" ]; then
+        bash "$INSTALLER" "$DEIN_REPO"
+    else
+        # Fallback: official installer
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/Shougo/dein.vim/master/bin/installer.sh)" -- "$XDG_DATA_HOME/dein"
+    fi
+
+    echo "[install_dein] installing plugins..."
+    nvim --headless \
+        -c ":call clap#installer#download_binary()" \
+        -c ":qa" 2>/dev/null || true
+fi

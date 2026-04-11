@@ -11,7 +11,15 @@ zshaddhistory() {
 
 # zinitの読み込み
 ZDOTDIR="$HOME"
-source "$(ghq root)/github.com/zdharma-continuum/zinit/zinit.zsh"
+ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
+if [ -f "$ZINIT_HOME/zinit.zsh" ]; then
+    source "$ZINIT_HOME/zinit.zsh"
+elif command -v ghq >/dev/null 2>&1 && [ -f "$(ghq root)/github.com/zdharma-continuum/zinit/zinit.zsh" ]; then
+    # Legacy fallback for machines that still have zinit in ghq
+    source "$(ghq root)/github.com/zdharma-continuum/zinit/zinit.zsh"
+else
+    echo "[zshrc] zinit not found; run 'chezmoi apply' or clone zdharma-continuum/zinit to $ZINIT_HOME" >&2
+fi
 
 # git-completionの読み込み
 fpath=(~/.zsh $fpath)
@@ -40,4 +48,4 @@ zinit wait lucid light-mode as'null' \
     atinit'source "$ZDOTDIR/.zshrc.lazy.sh"' \
     for 'zdharma-continuum/null'
 
-eval $(thefuck --alias)
+command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"

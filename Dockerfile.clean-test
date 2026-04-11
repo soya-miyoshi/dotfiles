@@ -1,0 +1,47 @@
+# Clean-room test image for the dotfiles bootstrap.
+#
+# Starts from a minimal Ubuntu base WITHOUT chezmoi or Homebrew pre-installed.
+# The dotfiles repo is expected to be bind-mounted at /dotfiles:ro at runtime,
+# and the entrypoint runs the full one-liner setup so we can verify that a
+# brand-new machine successfully bootstraps end-to-end.
+#
+# Usage (from the host):
+#   docker build -f Dockerfile.clean-test -t dotfiles-clean-test .
+#   docker run --rm --platform linux/amd64 -v "$PWD":/dotfiles:ro dotfiles-clean-test
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Bare-minimum prerequisites — exactly what a fresh Ubuntu install would have
+# after installing curl + sudo. Everything else (brew, chezmoi, nvim, ...) must
+# be installed by the dotfiles bootstrap itself.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        git \
+        build-essential \
+        procps \
+        file \
+        locales \
+        sudo \
+        zsh \
+        unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+# linuxbrew refuses to run as root, so we need a regular user with sudo.
+RUN useradd -m -s /bin/bash tester \
+    && echo 'tester ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+USER tester
+WORKDIR /home/tester
+ENV HOME=/home/tester
+
+# Entrypoint script does init + apply + assertions.
+COPY --chown=tester:tester clean-test-entrypoint.sh /home/tester/entrypoint.sh
+RUN chmod +x /home/tester/entrypoint.sh
+
+ENTRYPOINT ["/home/tester/entrypoint.sh"]

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Symlink ~/.dotconfig/* into ~/.config/
+# Runs after chezmoi has placed the .dotconfig directory.
+set -euo pipefail
+
+mkdir -p "$HOME/.config"
+
+if [ ! -d "$HOME/.dotconfig" ]; then
+    echo "[link_dotconfig] WARNING: $HOME/.dotconfig does not exist, skipping"
+    exit 0
+fi
+
+for dir in "$HOME/.dotconfig"/*; do
+    [ -e "$dir" ] || continue
+    name=$(basename "$dir")
+    target="$HOME/.config/$name"
+    if [ -L "$target" ] || [ ! -e "$target" ]; then
+        ln -sfn "$dir" "$target"
+        echo "[link_dotconfig] linked $name"
+    else
+        echo "[link_dotconfig] skip $name (existing non-symlink)"
+    fi
+done
+
+# Note: script permissions are managed by chezmoi via the `executable_` filename
+# prefix on each entry in dot_dotconfig/scripts/bin/, so no chmod needed here.

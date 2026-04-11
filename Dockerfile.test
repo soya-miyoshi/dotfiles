@@ -1,0 +1,56 @@
+FROM ubuntu:22.04
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    procps \
+    file \
+    locales \
+    sudo \
+    zsh \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set locale
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+# Create a non-root user for Homebrew
+RUN useradd -m -s /bin/bash linuxbrew && \
+    echo 'linuxbrew ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+# Switch to non-root user
+USER linuxbrew
+WORKDIR /home/linuxbrew
+ENV HOME=/home/linuxbrew
+
+# Install Homebrew (Linuxbrew)
+RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Add brew to PATH and environment
+ENV PATH="/home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:${PATH}"
+ENV HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"
+ENV HOMEBREW_CELLAR="/home/linuxbrew/.linuxbrew/Cellar"
+ENV HOMEBREW_REPOSITORY="/home/linuxbrew/.linuxbrew/Homebrew"
+
+# Initialize brew environment for interactive shells
+RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/linuxbrew/.bashrc
+RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/linuxbrew/.zshrc
+
+# Install chezmoi
+RUN sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /home/linuxbrew/.local/bin
+ENV PATH="/home/linuxbrew/.local/bin:${PATH}"
+
+# Change default shell to zsh
+RUN sudo chsh -s $(which zsh) linuxbrew
+
+# Test script
+COPY --chown=linuxbrew:linuxbrew test-dotfiles.sh /home/linuxbrew/test-dotfiles.sh
+RUN chmod +x /home/linuxbrew/test-dotfiles.sh
+
+CMD ["/home/linuxbrew/test-dotfiles.sh"]

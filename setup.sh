@@ -9,7 +9,6 @@ set -euo pipefail
 #   1. Calculates host ports (21000-24999 range, based on N)
 #   2. Writes computed values back to .env
 #   3. Updates static project name references in source files
-#   4. Generates .dev.vars for wrangler
 #
 # Usage:
 #   1. cp .env.example .env
@@ -56,7 +55,6 @@ TITLE=$(echo "$KEBAB" | sed -E 's/-/ /g; s/\b(\w)/\U\1/g')
 # Calculate host ports
 # Web 1-10:         21000+N ~ 21900+N
 # API 1-10:         22000+N ~ 22900+N
-# Auth 1-5:         23000+N ~ 23400+N
 
 # Web (Vite) — 10 slots
 for i in $(seq 1 10); do
@@ -66,11 +64,6 @@ done
 # API (Wrangler) — 10 slots
 for i in $(seq 1 10); do
   declare "PORT_API_${i}=$(( 22000 + (i - 1) * 100 + PROJECT_NUMBER ))"
-done
-
-# Auth (GoTrue) — 5 slots
-for i in $(seq 1 5); do
-  declare "PORT_AUTH_${i}=$(( 23000 + (i - 1) * 100 + PROJECT_NUMBER ))"
 done
 
 
@@ -89,10 +82,6 @@ done
 for i in $(seq 1 10); do
   var="PORT_API_${i}"
   echo "    API $i (Wrangler):  localhost:${!var}"
-done
-for i in $(seq 1 5); do
-  var="PORT_AUTH_${i}"
-  echo "    Auth $i (GoTrue):   localhost:${!var}"
 done
 echo ""
 
@@ -115,17 +104,8 @@ echo ""
     echo "PORT_API_${i}=${!var}"
   done
   echo ""
-  echo "# Auth (GoTrue) ports — 5 slots"
-  for i in $(seq 1 5); do
-    var="PORT_AUTH_${i}"
-    echo "PORT_AUTH_${i}=${!var}"
-  done
-  echo ""
   echo "# Docker Compose files"
   echo "COMPOSE_FILE=${COMPOSE_FILE:-docker-compose.yml}"
-  echo ""
-  echo "# Credentials"
-  echo "JWT_SECRET=${JWT_SECRET:-super-secret-jwt-token-for-testing-only-change-in-production}"
 } > "$ENV_FILE"
 
 # ---- Update static project names ----
@@ -148,12 +128,6 @@ sed -i.bak 's/"short_name": "MySaaS"/"short_name": "'"$PASCAL"'"/' "$SCRIPT_DIR/
 
 # apps/web/index.html (page title)
 sed -i.bak 's/<title>My SaaS<\/title>/<title>'"$TITLE"'<\/title>/' "$SCRIPT_DIR/apps/web/index.html"
-
-# ---- Generate .dev.vars for wrangler ----
-
-cat > "$SCRIPT_DIR/apps/api/.dev.vars" <<EOF
-JWT_SECRET=${JWT_SECRET:-super-secret-jwt-token-for-testing-only-change-in-production}
-EOF
 
 # ---- Cleanup .bak files ----
 

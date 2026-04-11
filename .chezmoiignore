@@ -1,0 +1,38 @@
+# Files in this repo that are NOT dotfiles and should not be applied to $HOME.
+# chezmoi will ignore matching paths when running `apply`.
+
+# Repo metadata
+README.md
+LICENSE.md
+MIGRATION_PLAN.md
+TESTING.md
+.github
+.github/**
+
+# Dev container / project tooling (this repo doubles as a workspace)
+Dockerfile
+Dockerfile.test
+Dockerfile.clean-test
+docker-compose.yml
+Makefile
+.dockerignore
+.env
+.env.example
+setup.sh
+dev-exec.sh
+dev-test-local.sh
+test-dotfiles.sh
+clean-test-entrypoint.sh
+pip-list.txt
+
+# install_dein.sh is referenced from run_once_after_03 via {{ .chezmoi.sourceDir }}.
+# It does not need to be installed to $HOME.
+install_dein.sh
+
+# Local Claude Code settings (per-machine, not for distribution)
+.claude
+.claude/**
+
+# Editor / OS noise
+.DS_Store
+**/.DS_Store

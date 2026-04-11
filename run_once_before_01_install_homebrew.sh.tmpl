@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Install Homebrew if missing.
+# Runs BEFORE chezmoi apply, so other run_once scripts can rely on brew.
+set -euo pipefail
+
+if command -v brew >/dev/null 2>&1; then
+    echo "[install_homebrew] brew already installed at $(command -v brew)"
+    exit 0
+fi
+
+{{ if .ci -}}
+echo "[install_homebrew] CI mode: skipping Homebrew install"
+exit 0
+{{- end }}
+
+echo "[install_homebrew] installing Homebrew..."
+NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+# Initialize brew env for this script's downstream
+{{ if eq .chezmoi.os "darwin" -}}
+if [ -x /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+{{- else if eq .chezmoi.os "linux" -}}
+if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+{{- end }}
+
+echo "[install_homebrew] done."

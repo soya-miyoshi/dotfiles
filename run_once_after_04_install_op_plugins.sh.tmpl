@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Initialize 1Password Shell Plugins so wrapped CLIs (aws, gh, ...)
+# automatically fetch credentials from 1Password at runtime.
+#
+# Skipped if:
+#   - CI mode (.ci)
+#   - User opted out of 1Password (.use_onepassword)
+#   - op CLI is not installed
+set -euo pipefail
+
+{{ if or .ci .no_secrets -}}
+echo "[install_op_plugins] ci/no_secrets mode: skipping"
+exit 0
+{{- end }}
+
+{{ if not .use_onepassword -}}
+echo "[install_op_plugins] use_onepassword=false: skipping"
+exit 0
+{{- end }}
+
+if ! command -v op >/dev/null 2>&1; then
+    echo "[install_op_plugins] op CLI not installed, skipping"
+    echo "[install_op_plugins] install with: brew install --cask 1password-cli  (mac) or brew install 1password-cli (linux)"
+    exit 0
+fi
+
+# Plugins we want wired up. Add more as needed.
+# Each entry must already exist in your 1Password vault.
+PLUGINS=(
+    aws
+    gh
+)
+
+for plugin in "${PLUGINS[@]}"; do
+    if op plugin inspect "$plugin" >/dev/null 2>&1; then
+        echo "[install_op_plugins] $plugin already configured"
+        continue
+    fi
+    echo "[install_op_plugins] initializing $plugin (interactive)..."
+    # 'op plugin init' is interactive; if there's no TTY, skip gracefully
+    if [ -t 0 ]; then
+        op plugin init "$plugin" || echo "[install_op_plugins] $plugin init failed (continuing)"
+    else
+        echo "[install_op_plugins] no TTY, skipping $plugin (run 'op plugin init $plugin' manually)"
+    fi
+done
+
+echo "[install_op_plugins] done."
+echo "[install_op_plugins] make sure ~/.config/op/plugins.sh is sourced from your shell rc."

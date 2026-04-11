@@ -1,0 +1,40 @@
+{{- /*
+   chezmoi config template.
+   On first `chezmoi init`, this prompts for values and writes them to
+   ~/.config/chezmoi/chezmoi.toml. Subsequent runs reuse the saved values.
+*/ -}}
+
+{{- $email := promptStringOnce . "email" "Git email" "soya.miyoshi@gmail.com" -}}
+{{- $name := promptStringOnce . "name" "Git name" "Soya Miyoshi" -}}
+{{- $useOnepassword := promptBoolOnce . "use_onepassword" "Use 1Password for personal secrets?" true -}}
+{{- $useBitwarden := promptBoolOnce . "use_bitwarden" "Use Bitwarden for shared secrets?" false -}}
+{{- $awsDefaultProfile := promptStringOnce . "aws_default_profile" "Default AWS profile" "default" -}}
+
+{{- /*
+   Two independent mode flags:
+
+   - .ci         → "we are in an automated, headless environment".
+                   Triggered by CI=1. Skips heavy/interactive installs
+                   (Homebrew, brew bundle, dein.vim plugins, op plugin init).
+                   Implies .no_secrets.
+
+   - .no_secrets → "no password manager is available right now".
+                   Triggered by CI=1 or CHEZMOI_NO_SECRETS=1. Skips reads
+                   from 1Password / Bitwarden so apply doesn't fail.
+
+   Typical combos:
+     normal mac setup           → CI=0, NO_SECRETS=0
+     test-clean (full E2E)      → CI=0, NO_SECRETS=1   (installs brew, skips secrets)
+     test-clean-fast / CI       → CI=1, NO_SECRETS=1   (skips brew + secrets)
+*/ -}}
+{{- $ci := env "CI" | empty | not -}}
+{{- $noSecrets := or $ci (env "CHEZMOI_NO_SECRETS" | empty | not) -}}
+
+[data]
+  email = {{ $email | quote }}
+  name = {{ $name | quote }}
+  use_onepassword = {{ $useOnepassword }}
+  use_bitwarden = {{ $useBitwarden }}
+  aws_default_profile = {{ $awsDefaultProfile | quote }}
+  ci = {{ $ci }}
+  no_secrets = {{ $noSecrets }}

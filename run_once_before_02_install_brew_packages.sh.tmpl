@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# Install brew packages and casks.
+# Runs after install_homebrew, before chezmoi apply.
+set -euo pipefail
+
+{{ if .ci -}}
+echo "[install_brew_packages] CI mode: skipping (heavy installs)"
+exit 0
+{{- end }}
+
+# Ensure brew is on PATH for this script
+if ! command -v brew >/dev/null 2>&1; then
+{{ if eq .chezmoi.os "darwin" -}}
+    if [ -x /opt/homebrew/bin/brew ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+{{- else if eq .chezmoi.os "linux" -}}
+    if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    fi
+{{- end }}
+fi
+
+if ! command -v brew >/dev/null 2>&1; then
+    echo "[install_brew_packages] ERROR: brew not found, aborting"
+    exit 1
+fi
+
+# Install one formula at a time so a single failure doesn't block subsequent
+# packages. Skip anything already installed (cheap idempotency).
+install_one() {
+    local pkg="$1"
+    local kind="${2:-formula}"   # formula or cask
+    if [ "$kind" = "cask" ]; then
+        if brew list --cask "$pkg" >/dev/null 2>&1; then
+            return 0
+        fi
+        brew install --cask "$pkg" \
+            || echo "[install_brew_packages] FAIL cask $pkg (continuing)"
+    else
+        if brew list --formula "$pkg" >/dev/null 2>&1; then
+            return 0
+        fi
+        brew install "$pkg" \
+            || echo "[install_brew_packages] FAIL formula $pkg (continuing)"
+    fi
+}
+
+# ---- Common formulae (mac + linux) ----
+COMMON_FORMULAE=(
+    ghq
+    coreutils
+    findutils
+    gnu-sed
+    grep
+    peco
+    tmux
+    fzf
+    neovim
+    tfenv
+    awscli
+    direnv
+    bitwarden-cli
+    sops
+    age
+    gh
+    jq
+    fd
+    ripgrep
+    telnet
+    jsonnet
+)
+
+echo "[install_brew_packages] installing common formulae..."
+for pkg in "${COMMON_FORMULAE[@]}"; do
+    install_one "$pkg" formula
+done
+
+{{ if eq .chezmoi.os "darwin" }}
+# ---- macOS-only formulae ----
+MAC_FORMULAE=(
+    nvm
+    maven
+    docker-compose
+    kayac/tap/ecspresso
+    fujiwara/tap/tfstate-lookup
+    aquaproj/aqua/aqua
+)
+echo "[install_brew_packages] installing macOS formulae..."
+for pkg in "${MAC_FORMULAE[@]}"; do
+    install_one "$pkg" formula
+done
+
+# ---- macOS casks ----
+MAC_CASKS=(
+    iterm2
+    google-chrome
+    contexts
+    clipy
+    karabiner-elements
+    visual-studio-code
+    session-manager-plugin
+    docker
+    rectangle
+    git-credential-manager-core
+    1password
+    1password-cli
+)
+echo "[install_brew_packages] installing macOS casks..."
+for pkg in "${MAC_CASKS[@]}"; do
+    install_one "$pkg" cask
+done
+{{ end }}
+
+{{ if eq .chezmoi.os "linux" }}
+# ---- Linux-only formulae ----
+# 1password-cli is a regular formula on linuxbrew (not a cask)
+LINUX_FORMULAE=(
+    1password-cli
+)
+echo "[install_brew_packages] installing Linux formulae..."
+for pkg in "${LINUX_FORMULAE[@]}"; do
+    install_one "$pkg" formula
+done
+{{ end }}
+
+echo "[install_brew_packages] done."

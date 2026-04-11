@@ -1,0 +1,10 @@
+# Local Claude Code settings (per-machine, not for distribution)
+.claude/
+
+# Local environment (use .env.example as the tracked template)
+.env
+
+# OS / editor noise
+.DS_Store
+*.swp
+*.swo
