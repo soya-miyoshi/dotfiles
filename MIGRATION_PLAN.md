@@ -115,6 +115,20 @@ chezmoi のテンプレート変数 `{{ .chezmoi.os }}` で分岐する:
 13. 全項目の移行を確認後、`dot_zshrc.lazy.sh` の `source private-dotfiles/*` を削除
 14. private-dotfiles リポをアーカイブ
 
+### フェーズ 6: ターミナル IDE 化 (LazyVim 移行)
+
+「VS Code を捨てて iTerm + tmux + nvim だけで開発する」目的の整理。
+
+15. ✅ dein.vim → LazyVim 移行 (`dot_dotconfig/nvim/init.lua` ベース)
+16. ✅ 言語拡張 (TS / JSON / YAML / Docker / Terraform / Go / Rust / Python / Markdown) を `lazy.lua` で有効化
+17. ✅ Harpoon, vim-tmux-navigator を `lua/plugins/user.lua` に追加
+18. ✅ tmux.conf を vim-tmux-navigator 対応に更新 (Ctrl+hjkl で nvim と tmux の境界を越える)
+19. ✅ `lazygit`, `bat`, `eza`, `glow`, `yazi` を brew パッケージに追加
+20. ✅ 操作ガイド `NVIM_GUIDE.md` を作成
+21. ⏳ Karabiner で Caps Lock → Esc, Cmd+H 無効化 (これは Karabiner 設定リポ側)
+22. ⏳ `claudecode.nvim` を試して必要なら有効化
+23. ⏳ 1〜2 週間使ってキーバインドが体に馴染んだら customize
+
 ## 新マシンでのセットアップ (ゴール像)
 
 ロードマップ完了後、新しい mac / linux マシンで以下のワンライナーで全復元できる状態を目指す:

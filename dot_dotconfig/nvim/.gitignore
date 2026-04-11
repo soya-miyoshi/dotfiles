@@ -1,0 +1,10 @@
+# Plugin / runtime data — installed by lazy.nvim, not part of the source repo.
+# (LazyVim uses stdpath("data") which is outside this dir, so this file is
+# mostly defensive in case someone vendors plugins inside ~/.config/nvim/.)
+/lazy/
+/mason/
+/site/
+/swap/
+/undo/
+/view/
+/shada/

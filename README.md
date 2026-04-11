@@ -85,9 +85,11 @@ make test-clean-shell # デバッグ用に対話シェル
 
 `.github/workflows/test-dotfiles.yml` で macOS / Linux (Docker) / Ubuntu (Native) の 3 環境で `chezmoi apply` をテストしている。
 
-## 移行プラン
+## ドキュメント
 
-進行中の整理: [`MIGRATION_PLAN.md`](./MIGRATION_PLAN.md)
+- [`NVIM_GUIDE.md`](./NVIM_GUIDE.md) — Neovim (LazyVim) の操作ガイド。VS Code から terminal IDE への移行用
+- [`MIGRATION_PLAN.md`](./MIGRATION_PLAN.md) — chezmoi + 1Password/Bitwarden + LazyVim 移行プラン
+- [`TESTING.md`](./TESTING.md) — Docker 経由のテスト手順
 
 ## Acknowledgement
 
