@@ -9,8 +9,7 @@ alias ghpr="git add -A && git push -u origin HEAD && gh pr create --fill --base"
 alias reload='source ~/.zshrc && { [ -n "$TMUX" ] && tmux source-file ~/.tmux.conf; } && echo reloaded'
 alias c='chezmoi'
 alias v="nvim"
-alias vim="vim"
-alias less="vim -R"
+alias less="nvim -R"
 alias orca='java -jar ~/.dotbin/monsiaj-loader-2.0.30-all.jar'
 alias encs3='java -jar ~/.dotbin/amazon-s3-encryption-cli-client-1.0.1-alpha.jar'
 alias exportenv='export $(cat .env | xargs -L 1)'
@@ -21,13 +20,15 @@ alias gam='git add $(git status | grep modified | awk '\''{print $2}'\'')'
 alias gco='git checkout'
 alias gc='git commit'
 alias gcm='git commit -m'
-alias gd='git checkout develop'
+__git_default_branch() {
+  git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo main
+}
+alias gd='git checkout $(__git_default_branch)'
 alias ca='chezmoi apply'
 alias dps="docker ps"
-alias gr='git fetch origin develop && git rebase origin/develop'
+alias gr='git fetch origin $(__git_default_branch) && git rebase origin/$(__git_default_branch)'
 alias tpt='t plan --target'
-alias gn='git checkout develop && git pull && git checkout -b'
-alias codechezoi='code ~/.local/share/chezmoi'
+alias gn='git checkout $(__git_default_branch) && git pull && git checkout -b'
 alias n='npm run'
 # Reload tmux config (was previously sourced on every shell start, which caused issues)
 alias tload='tmux source-file ~/.tmux.conf'
@@ -209,6 +210,7 @@ ecs_exec() {
 # ---- OS-specific aliases ----
 case "$OSTYPE" in
     linux*)
+        (( ${+commands[eza]} )) && alias ls='eza --git --icons'
         (( ${+commands[wslview]} )) && alias open='wslview'
 
         if (( ${+commands[win32yank.exe]} )); then
@@ -229,7 +231,9 @@ case "$OSTYPE" in
         alias p='pbpaste'
         alias chrome='open -a "Google Chrome"'
         (( ${+commands[gdate]} )) && alias date='gdate'
-        (( ${+commands[gls]} )) && alias ls='gls --color=auto'
+        if (( ${+commands[eza]} )); then alias ls='eza --git --icons'
+        elif (( ${+commands[gls]} )); then alias ls='gls --color=auto'
+        fi
         (( ${+commands[gmkdir]} )) && alias mkdir='gmkdir'
         (( ${+commands[gcp]} )) && alias cp='gcp -i'
         (( ${+commands[gmv]} )) && alias mv='gmv -i'
