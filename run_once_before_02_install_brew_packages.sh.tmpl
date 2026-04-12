@@ -48,6 +48,22 @@ install_one() {
     fi
 }
 
+# Packages listed here are always upgraded to the latest version on every
+# chezmoi apply (LazyVim etc. require a recent neovim, so we can't let it
+# drift). Add a formula here when you want `chezmoi apply` to keep it fresh.
+upgrade_one() {
+    local pkg="$1"
+    if ! brew list --formula "$pkg" >/dev/null 2>&1; then
+        return 0
+    fi
+    brew upgrade "$pkg" \
+        || echo "[install_brew_packages] FAIL upgrade $pkg (continuing)"
+}
+
+UPGRADE_FORMULAE=(
+    neovim
+)
+
 # ---- Common formulae (mac + linux) ----
 COMMON_FORMULAE=(
     ghq
@@ -77,6 +93,7 @@ COMMON_FORMULAE=(
     eza           # modern ls replacement
     glow          # markdown renderer for the terminal
     yazi          # file manager (visual file browser in tmux)
+    viddy         # modern `watch` with diff highlight (used by ghw alias)
     tree-sitter   # CLI for nvim treesitter
     luarocks      # required by some nvim plugins
 )
@@ -84,6 +101,11 @@ COMMON_FORMULAE=(
 echo "[install_brew_packages] installing common formulae..."
 for pkg in "${COMMON_FORMULAE[@]}"; do
     install_one "$pkg" formula
+done
+
+echo "[install_brew_packages] upgrading pinned-fresh formulae..."
+for pkg in "${UPGRADE_FORMULAE[@]}"; do
+    upgrade_one "$pkg"
 done
 
 {{ if eq .chezmoi.os "darwin" }}
@@ -113,24 +135,10 @@ MAC_CASKS=(
     docker
     rectangle
     git-credential-manager-core
-    1password
-    1password-cli
 )
 echo "[install_brew_packages] installing macOS casks..."
 for pkg in "${MAC_CASKS[@]}"; do
     install_one "$pkg" cask
-done
-{{ end }}
-
-{{ if eq .chezmoi.os "linux" }}
-# ---- Linux-only formulae ----
-# 1password-cli is a regular formula on linuxbrew (not a cask)
-LINUX_FORMULAE=(
-    1password-cli
-)
-echo "[install_brew_packages] installing Linux formulae..."
-for pkg in "${LINUX_FORMULAE[@]}"; do
-    install_one "$pkg" formula
 done
 {{ end }}
 

@@ -1,4 +1,4 @@
-# 移行計画: chezmoi + 1Password/Bitwarden 統合 & マルチ OS 対応
+# 移行計画: chezmoi + Bitwarden & マルチ OS 対応
 
 ## 背景と目的
 
@@ -16,20 +16,17 @@
 | 層 | 役割 |
 |---|---|
 | **public dotfiles (このリポ)** | 全ファイルをテンプレート化可能。OS 分岐もここで |
-| **1Password** | 個人の secrets。Shell Plugin 優先、駄目ならテンプレート展開 |
-| **Bitwarden** | 共有プロジェクト (個人開発で複数人共有) の secrets。Shell Plugin 無しなので常にテンプレート展開 |
+| **Bitwarden** | すべての secrets。チーム共有の Bitwarden アカウント |
 | **private-dotfiles (別リポ)** | 段階的に廃止 |
 
 ## シークレット扱いの分類
 
 | タイプ | 方式 | 具体例 |
 |---|---|---|
-| 1P Shell Plugin 対応 CLI | `op plugin init <tool>` | `aws`, `gh`, `glab`, `cargo publish`, `terraform` 等 |
-| 1P にあるが生の env var が必要 | `.tmpl` + `onepasswordRead` | `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` |
-| Bitwarden (共有) | `.tmpl` + `bitwardenFields` | 共有プロジェクトの DB URL, API キー等 |
+| Bitwarden | `.tmpl` + `bitwardenFields` / `bitwarden` | API キー、DB URL、各種 credential |
 | 非機密 | そのままコミット | OS 分岐、alias、キーバインド |
 
-**原則**: ディスクに平文の secret を書かないで済む方法 (Shell Plugin) を最優先する。テンプレート展開が必要な場合は `~/.tokens` 等を `chmod 600` で配置する。
+**原則**: シークレットは平文でリポに入れず、`bw` CLI 経由で apply 時に取得 → `~/.tokens` (chmod 600) に展開する。
 
 ## OS 分岐
 
@@ -45,89 +42,79 @@ chezmoi のテンプレート変数 `{{ .chezmoi.os }}` で分岐する:
 
 適用箇所:
 
-- `dot_zshrc.lazy.sh` (brew パス、`pbcopy` 等)
-- `run_once_install_brew_packages.sh.tmpl` (mac は cask 含む、linux は方針未決)
-- `executable_aws-console` (mac は `open`、linux は `xdg-open`)
+- `dot_zshrc.lazy.sh.tmpl` (brew パス、`pbcopy` 等)
+- `run_once_before_02_install_brew_packages.sh.tmpl` (mac は cask 含む、linux は formulae のみ)
 
 ## `.chezmoi.toml.tmpl` プロンプト設計
 
 初回 `chezmoi init` で対話式に収集:
 
-```toml
-{{- $email := promptStringOnce . "email" "Email" "soya.miyoshi@gmail.com" -}}
-{{- $name := promptStringOnce . "name" "Name" "Soya Miyoshi" -}}
-{{- $useOnepassword := promptBoolOnce . "use_onepassword" "Use 1Password?" true -}}
-{{- $useBitwarden := promptBoolOnce . "use_bitwarden" "Use Bitwarden (shared)?" false -}}
-{{- $ci := env "CI" | not | not -}}
-
-[data]
-  email = {{ $email | quote }}
-  name = {{ $name | quote }}
-  use_onepassword = {{ $useOnepassword }}
-  use_bitwarden = {{ $useBitwarden }}
-  ci = {{ $ci }}
+```gotemplate
+{{- $email := promptStringOnce . "email" "Git email" "soya.miyoshi@gmail.com" -}}
+{{- $name := promptStringOnce . "name" "Git name" "Soya Miyoshi" -}}
+{{- $useBitwarden := promptBoolOnce . "use_bitwarden" "Use Bitwarden for secrets?" true -}}
+{{- $awsDefaultProfile := promptStringOnce . "aws_default_profile" "Default AWS profile" "default" -}}
+{{- $ci := env "CI" | empty | not -}}
+{{- $noSecrets := or $ci (env "CHEZMOI_NO_SECRETS" | empty | not) -}}
 ```
 
 ポイント:
 
-- **CI では secrets 無しで apply が通る** (`{{ if .use_onepassword }}` で分岐)
-- `promptStringOnce` / `promptBoolOnce` は初回のみ尋ね、2 回目以降は再利用される
-- 環境変数 `CI` の有無で自動判定
+- **`.ci`** = `CI=1` の時だけ true。brew install / dein 等の重い処理をスキップ。
+- **`.no_secrets`** = `CI=1` または `CHEZMOI_NO_SECRETS=1` で true。Bitwarden の取得をスキップ。
+- **CI では secrets 無しで apply が通る**
+- `promptStringOnce` / `promptBoolOnce` は初回のみ尋ねて以後は値を再利用
 
 ## 移行対象 (private-dotfiles → このリポ)
 
 | 現在のファイル | 移行先 | 方式 |
 |---|---|---|
-| `.tokens` | `dot_tokens.tmpl` (→ `~/.tokens`) | 1P テンプレート展開、`chmod 600` |
+| `.tokens` | `private_dot_tokens.tmpl` (→ `~/.tokens`) | Bitwarden テンプレート展開、`chmod 600` |
 | `.aws-default-profile` | `.chezmoi.toml.tmpl` のプロンプトに統合 | 変数として永続化 |
-| `dot_zshrc.private` | `dot_zshrc.lazy.sh` に統合するか `dot_zshrc.local.tmpl` に | 中身次第 |
-| AWS コンソールログインスクリプト | `dot_dotconfig/scripts/bin/executable_aws-console` | **1P Shell Plugin で素のまま** |
-| `dot_zshrc.lazy.sh:54-56` の `source private-dotfiles/*` 行 | 削除 | |
+| `dot_zshrc.private` | `dot_zshrc.lazy.sh.tmpl` に統合するか別ファイルに分離 | 中身次第 |
+| AWS コンソールログインスクリプト | `dot_dotconfig/scripts/bin/` | Bitwarden 展開 or env 変数経由 |
+| `dot_zshrc.lazy.sh` の `source private-dotfiles/*` 行 | 削除 | |
 
 ## 段階的ロードマップ
 
-### フェーズ 1: 土台作り (secrets 無しで動く状態)
+### フェーズ 1: 土台作り (secrets 無しで動く状態) ✅
 
-1. `.chezmoi.toml.tmpl` を作成、プロンプトと CI 判定を実装
-2. `dot_zshrc.lazy.sh` を `.tmpl` 化して OS 分岐導入
-3. `private-dotfiles` 参照行を条件付きに (`{{ if not .ci }}`)
-4. CI (既存の `.github/workflows/test-dotfiles.yml`) が secrets 無しでグリーンになることを確認
+1. ✅ `.chezmoi.toml.tmpl` を作成、プロンプトと CI 判定を実装
+2. ✅ `dot_zshrc.lazy.sh` を `.tmpl` 化して OS 分岐導入
+3. ✅ `private-dotfiles` 参照行を条件付きに (`{{ if not .no_secrets }}`)
+4. ✅ CI が secrets 無しでグリーン
 
-### フェーズ 2: 1P Shell Plugins 移行 (最も効果の高いもの)
+### フェーズ 2: Bitwarden 連携 ⏳
 
-5. `run_once_after_install_op_plugins.sh.tmpl` を追加 (`op plugin init aws` 等)
-6. AWS コンソールログインスクリプトをこのリポに移動 (テンプレート化は不要)
-7. `gh` CLI も同様に移行
+5. ⏳ `private_dot_tokens.tmpl` に Bitwarden の `bitwardenFields` 呼び出しを追加
+6. ⏳ `.aws-default-profile` を `.chezmoi.toml.tmpl` のプロンプト変数 `aws_default_profile` に統合 ✅
+7. ⏳ `dot_zshrc.private` の中身を確認し、共通/個人/会社固有で振り分け
+8. ⏳ `bw login` / `bw unlock` の手順を README に追記
 
-### フェーズ 3: テンプレート展開が必要な secrets
+### フェーズ 3: Linux 対応の実働確認 ✅
 
-8. `dot_tokens.tmpl` を作成 (1P から `ANTHROPIC_API_KEY` 等を取得)
-9. `.aws-default-profile` を `.chezmoi.toml.tmpl` のプロンプト変数に統合
-10. `dot_zshrc.private` の中身を確認し、会社固有/個人固有で振り分け
+9. ✅ `run_once_before_02_install_brew_packages.sh.tmpl` に Linux 分岐追加
+10. ✅ `Dockerfile.clean-test` を作成し、ローカルから E2E テスト可能に
+11. ✅ CI (`.github/workflows/test-dotfiles.yml`) で Linux 側が apply 成功することを確認
 
-### フェーズ 4: Linux 対応の実働確認
+### フェーズ 4: private-dotfiles 廃止 ⏳
 
-11. `run_once_install_brew_packages.sh.tmpl` に Linux 分岐追加 (linuxbrew 前提か apt かを決める)
-12. `Dockerfile.test` で CI を回し、Linux 側が apply 成功することを確認
+12. ⏳ 全項目の移行を確認後、`dot_zshrc.lazy.sh.tmpl` の `source private-dotfiles/*` を削除
+13. ⏳ private-dotfiles リポをアーカイブ
 
-### フェーズ 5: private-dotfiles 廃止
-
-13. 全項目の移行を確認後、`dot_zshrc.lazy.sh` の `source private-dotfiles/*` を削除
-14. private-dotfiles リポをアーカイブ
-
-### フェーズ 6: ターミナル IDE 化 (LazyVim 移行)
+### フェーズ 5: ターミナル IDE 化 (LazyVim 移行) ✅
 
 「VS Code を捨てて iTerm + tmux + nvim だけで開発する」目的の整理。
 
-15. ✅ dein.vim → LazyVim 移行 (`dot_dotconfig/nvim/init.lua` ベース)
-16. ✅ 言語拡張 (TS / JSON / YAML / Docker / Terraform / Go / Rust / Python / Markdown) を `lazy.lua` で有効化
-17. ✅ Harpoon, vim-tmux-navigator を `lua/plugins/user.lua` に追加
-18. ✅ tmux.conf を vim-tmux-navigator 対応に更新 (Ctrl+hjkl で nvim と tmux の境界を越える)
-19. ✅ `lazygit`, `bat`, `eza`, `glow`, `yazi` を brew パッケージに追加
-20. ✅ 操作ガイド `NVIM_GUIDE.md` を作成
-21. ⏳ Karabiner で Caps Lock → Esc, Cmd+H 無効化 (これは Karabiner 設定リポ側)
-22. ⏳ `claudecode.nvim` を試して必要なら有効化
-23. ⏳ 1〜2 週間使ってキーバインドが体に馴染んだら customize
+14. ✅ dein.vim → LazyVim 移行 (`dot_dotconfig/nvim/init.lua` ベース)
+15. ✅ 言語拡張 (TS / JSON / YAML / Docker / Terraform / Go / Rust / Python / Markdown) を `lazy.lua` で有効化
+16. ✅ Harpoon, vim-tmux-navigator を `lua/plugins/user.lua` に追加
+17. ✅ tmux.conf を vim-tmux-navigator 対応に更新 (Ctrl+hjkl で nvim と tmux の境界を越える)
+18. ✅ `lazygit`, `bat`, `eza`, `glow`, `yazi` を brew パッケージに追加
+19. ✅ 操作ガイド `NVIM_GUIDE.md` を作成
+20. ⏳ Karabiner で Caps Lock → Esc, Cmd+H 無効化 (これは Karabiner 設定リポ側)
+21. ⏳ `claudecode.nvim` を試して必要なら有効化
+22. ⏳ 1〜2 週間使ってキーバインドが体に馴染んだら customize
 
 ## 新マシンでのセットアップ (ゴール像)
 
@@ -139,19 +126,15 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply soya-miyoshi
 
 必要な前提:
 
-- 1Password CLI (`op`) でサインイン済み
-- (共有プロジェクトに触る場合のみ) Bitwarden CLI (`bw`) でアンロック済み
+- (Bitwarden secrets を取り込みたい場合のみ) `bw` CLI でログイン + unlock 済み
+  ```sh
+  bw login
+  export BW_SESSION=$(bw unlock --raw)
+  ```
 
-## 未決事項 / 決めてほしいこと
-
-1. **この順番で進めて OK?** それとも別の優先順位 (例: 先に AWS コンソールスクリプトだけやる)
-2. **Linux は何を想定?** Ubuntu/Debian 系だけで OK? それとも Arch や Fedora も? (パッケージマネージャ分岐に影響)
-3. **Linux でも brew を使う?** それとも apt 直で行く? (linuxbrew は遅い/重いが、mac と同じパッケージリストを使える)
-4. **dev コンテナ (今 claude が動いている環境) は対象に含める?** 含めるなら CI とほぼ同じ扱い (secrets 無し apply)
+シークレット連携無しで動かしたい時は `CHEZMOI_NO_SECRETS=1 chezmoi apply`。
 
 ## 参考リンク
 
 - chezmoi templates: https://www.chezmoi.io/user-guide/templating/
-- chezmoi + 1Password: https://www.chezmoi.io/user-guide/password-managers/1password/
 - chezmoi + Bitwarden: https://www.chezmoi.io/user-guide/password-managers/bitwarden/
-- 1Password Shell Plugins: https://developer.1password.com/docs/cli/shell-plugins/

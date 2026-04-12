@@ -10,29 +10,17 @@
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply soya-miyoshi
 ```
 
-初回実行時にいくつかプロンプトが出る (email, 1Password を使うか、Bitwarden を使うか、デフォルト AWS profile)。
+初回実行時にいくつかプロンプトが出る (email, Bitwarden を使うか、デフォルト AWS profile)。
 
 ### シークレット連携
 
-- 個人用シークレット (API トークン等) は **1Password**
-- 共有プロジェクトのシークレットは **Bitwarden**
+シークレットは **Bitwarden** に集約。`bw` CLI でアンロック (`bw unlock` → `export BW_SESSION=...`) しておけば、`chezmoi apply` 時に自動取得される。
 
-`op` / `bw` CLI がインストールされてサインイン済みであれば、`chezmoi apply` 時に自動取得される。CI / シークレットマネージャ無しで動かしたい場合:
+CI / シークレットマネージャ無しで動かしたい場合:
 
 ```sh
 CHEZMOI_NO_SECRETS=1 chezmoi apply
 ```
-
-### 1Password Shell Plugins
-
-`aws`, `gh` などの CLI を 1Password でラップして、credentials をディスクに書かずに使える:
-
-```sh
-op plugin init aws
-op plugin init gh
-```
-
-`run_once_after_04_install_op_plugins.sh.tmpl` が初回 apply 時に対話的に走る (TTY がある場合)。
 
 ## このリポジトリ自体を開発する (dev container)
 
@@ -88,7 +76,7 @@ make test-clean-shell # デバッグ用に対話シェル
 ## ドキュメント
 
 - [`NVIM_GUIDE.md`](./NVIM_GUIDE.md) — Neovim (LazyVim) の操作ガイド。VS Code から terminal IDE への移行用
-- [`MIGRATION_PLAN.md`](./MIGRATION_PLAN.md) — chezmoi + 1Password/Bitwarden + LazyVim 移行プラン
+- [`MIGRATION_PLAN.md`](./MIGRATION_PLAN.md) — chezmoi + Bitwarden + LazyVim 移行プラン
 - [`TESTING.md`](./TESTING.md) — Docker 経由のテスト手順
 
 ## Acknowledgement

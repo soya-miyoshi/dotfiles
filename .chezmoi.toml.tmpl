@@ -6,8 +6,7 @@
 
 {{- $email := promptStringOnce . "email" "Git email" "soya.miyoshi@gmail.com" -}}
 {{- $name := promptStringOnce . "name" "Git name" "Soya Miyoshi" -}}
-{{- $useOnepassword := promptBoolOnce . "use_onepassword" "Use 1Password for personal secrets?" true -}}
-{{- $useBitwarden := promptBoolOnce . "use_bitwarden" "Use Bitwarden for shared secrets?" false -}}
+{{- $useBitwarden := promptBoolOnce . "use_bitwarden" "Use Bitwarden for secrets?" true -}}
 {{- $awsDefaultProfile := promptStringOnce . "aws_default_profile" "Default AWS profile" "default" -}}
 
 {{- /*
@@ -15,12 +14,12 @@
 
    - .ci         → "we are in an automated, headless environment".
                    Triggered by CI=1. Skips heavy/interactive installs
-                   (Homebrew, brew bundle, dein.vim plugins, op plugin init).
+                   (Homebrew, brew bundle, dein.vim plugins).
                    Implies .no_secrets.
 
    - .no_secrets → "no password manager is available right now".
                    Triggered by CI=1 or CHEZMOI_NO_SECRETS=1. Skips reads
-                   from 1Password / Bitwarden so apply doesn't fail.
+                   from Bitwarden so apply doesn't fail.
 
    Typical combos:
      normal mac setup           → CI=0, NO_SECRETS=0
@@ -33,7 +32,6 @@
 [data]
   email = {{ $email | quote }}
   name = {{ $name | quote }}
-  use_onepassword = {{ $useOnepassword }}
   use_bitwarden = {{ $useBitwarden }}
   aws_default_profile = {{ $awsDefaultProfile | quote }}
   ci = {{ $ci }}

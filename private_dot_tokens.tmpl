@@ -2,31 +2,21 @@
    ~/.tokens — sourced from dot_zshrc.lazy.sh.
    Filename has the `private_` prefix so chezmoi sets mode 0600.
 
-   This file is intentionally minimal. To add a real secret, append a line like:
-
-       export ANTHROPIC_API_KEY={{ "{{" }} onepasswordRead "op://Personal/Anthropic/credential" {{ "}}" }}
-       export OPENAI_API_KEY={{ "{{" }} onepasswordRead "op://Personal/OpenAI/credential" {{ "}}" }}
-
-   …then run `chezmoi apply`. The op CLI must be signed in.
-
-   For Bitwarden (shared secrets):
+   To add a real secret, append a line like:
 
        export SHARED_DB_URL={{ "{{" }} (bitwardenFields "item" "shared-dev-db").db_url.value {{ "}}" }}
 
-   In CI mode (.ci=true) this file is generated empty so apply doesn't fail
+   …then run `chezmoi apply`. The bw CLI must be unlocked
+   (`bw unlock` and export $BW_SESSION).
+
+   In CI / no_secrets mode this file is generated empty so apply doesn't fail
    without a password manager.
 */ -}}
 # ~/.tokens — managed by chezmoi
 # Edit dot_tokens.tmpl in your dotfiles repo to add entries.
 
-{{ if and .use_onepassword (not .no_secrets) }}
-# 1Password personal secrets go here.
-# Example (uncomment and edit op:// reference for your vault):
-# export ANTHROPIC_API_KEY={{ "{{" }} onepasswordRead "op://Personal/Anthropic API Key/credential" {{ "}}" }}
-{{ end }}
-
 {{ if and .use_bitwarden (not .no_secrets) }}
-# Bitwarden shared secrets go here.
-# Example:
+# Bitwarden secrets go here.
+# Example (uncomment and edit for your vault layout):
 # export SHARED_PROJECT_DB_URL={{ "{{" }} (bitwardenFields "item" "shared-dev-db").db_url.value {{ "}}" }}
 {{ end }}
