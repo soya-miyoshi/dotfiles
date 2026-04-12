@@ -250,29 +250,23 @@ zshaddhistory() {
     [[ ! "$line" =~ "^(cd|jj?|lazygit|la|ll|ls|rm|rmdir)($| )" ]]
 }
 
-# peco history search (Ctrl-R)
-function peco-select-history() {
-  BUFFER=$(\history -n -r 1 | peco --query "$LBUFFER")
-  CURSOR=$#BUFFER
-  zle clear-screen
-}
-zle -N peco-select-history
-bindkey '^r' peco-select-history
-
-function peco-src () {
-  local selected_dir=$(ghq list -p | peco --query "$LBUFFER")
+# ghq directory picker (Ctrl-P) — fzf version
+function fzf-src () {
+  local selected_dir=$(ghq list -p | fzf --query "$LBUFFER")
   if [ -n "$selected_dir" ]; then
     BUFFER="cd ${selected_dir}"
     zle accept-line
   fi
   zle clear-screen
 }
-zle -N peco-src
-bindkey '^p' peco-src
+zle -N fzf-src
+bindkey '^p' fzf-src
 
 ### FZF
 export FZF_DEFAULT_OPTS='--border --ansi --bind="ctrl-d:print-query,ctrl-p:replace-query"'
 export FZF_DEFAULT_COMMAND='fd --hidden --color=always'
+# Load fzf key bindings (Ctrl-R history search, Ctrl-T file picker, Alt-C cd)
+source "${HOMEBREW_PREFIX}/opt/fzf/shell/key-bindings.zsh" 2>/dev/null
 
 # Assign a deterministic color theme to a tmux session based on its name.
 # The hash of the session name picks from a curated palette so each project

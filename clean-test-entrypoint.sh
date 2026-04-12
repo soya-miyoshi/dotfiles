@@ -92,7 +92,7 @@ else
     # Check each expected command. Don't bail on first failure — collect all
     # missing packages so the user sees the full picture.
     missing=()
-    for cmd in nvim fzf gh jq fd rg direnv tmux peco ghq sops age tfenv; do
+    for cmd in nvim fzf gh jq fd rg direnv tmux ghq sops age tfenv; do
         if command -v "$cmd" >/dev/null 2>&1; then
             ok "$cmd in PATH"
         else
