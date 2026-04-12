@@ -289,13 +289,21 @@ __tmux_apply_session_theme() {
         "fg=#1d1f21,bg=#de935f"   # orange
         "fg=#1d1f21,bg=#a3685a"   # brown
     )
-    local idx=$(( RANDOM % ${#palette[@]} + 1 ))
+    local hash=$(printf '%s' "$session" | cksum | awk '{print $1}')
+    local idx=$(( hash % ${#palette[@]} + 1 ))
     local style="${palette[$idx]}"
-    local fg="${style%%,*}"; fg="${fg#fg=}"
     local bg="${style##*bg=}"
 
-    tmux set-option -t "$session" status-left "#[${style},bold] #S #[default] " \; \
+    # Convert hex color to RGB for iTerm tab color escape sequence
+    local r=$((16#${bg:1:2})) g=$((16#${bg:3:2})) b=$((16#${bg:5:2}))
+
+    tmux set-option -t "$session" status-left "#[${style},bold] [#S] #[default] " \; \
          set-option -t "$session" status-style "fg=${bg},bg=default"
+
+    # Set iTerm2 tab color to match the session theme
+    printf "\033]6;1;bg;red;brightness;%d\a" "$r"
+    printf "\033]6;1;bg;green;brightness;%d\a" "$g"
+    printf "\033]6;1;bg;blue;brightness;%d\a" "$b"
 }
 
 # Re-roll the current tmux session's color theme
@@ -313,7 +321,7 @@ widget::ghq::source() {
     local sessions=($(tmux list-sessions -F "#S" 2>/dev/null))
 
     ghq list | sort | while read -r repo; do
-        session="${repo//[:. ]/-}"
+        session="${${repo##*/}//[:. ]/-}"
         color="$blue"
         icon="$unchecked"
         if (( ${+sessions[(r)$session]} )); then
