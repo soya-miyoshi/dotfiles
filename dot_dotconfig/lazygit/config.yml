@@ -1,0 +1,6 @@
+customCommands:
+  - key: "<c-y>"
+    context: "localBranches"
+    command: "gh pr create --fill --base $(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo main)"
+    loadingText: "Creating PR..."
+    stream: true
