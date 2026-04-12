@@ -79,7 +79,6 @@ zinit wait lucid light-mode as'program' from'gh-r' for \
 # ---- Tool initializations (only if installed) ----
 command -v rbenv >/dev/null 2>&1 && eval "$(rbenv init -)"
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
-command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
 
 # ---- Secrets ----
 # Tokens managed by chezmoi templates (~/.tokens, chmod 600)
@@ -275,6 +274,39 @@ bindkey '^p' peco-src
 export FZF_DEFAULT_OPTS='--border --ansi --bind="ctrl-d:print-query,ctrl-p:replace-query"'
 export FZF_DEFAULT_COMMAND='fd --hidden --color=always'
 
+# Assign a deterministic color theme to a tmux session based on its name.
+# The hash of the session name picks from a curated palette so each project
+# gets a distinct, stable color for the status bar.
+__tmux_apply_session_theme() {
+    local session="$1"
+    local -a palette=(
+        "fg=#1d1f21,bg=#81a2be"   # blue
+        "fg=#1d1f21,bg=#b5bd68"   # green
+        "fg=#1d1f21,bg=#f0c674"   # yellow
+        "fg=#1d1f21,bg=#cc6666"   # red
+        "fg=#1d1f21,bg=#b294bb"   # purple
+        "fg=#1d1f21,bg=#8abeb7"   # cyan
+        "fg=#1d1f21,bg=#de935f"   # orange
+        "fg=#1d1f21,bg=#a3685a"   # brown
+    )
+    local idx=$(( RANDOM % ${#palette[@]} + 1 ))
+    local style="${palette[$idx]}"
+    local fg="${style%%,*}"; fg="${fg#fg=}"
+    local bg="${style##*bg=}"
+
+    tmux set-option -t "$session" status-left "#[${style},bold] #S #[default] " \; \
+         set-option -t "$session" status-style "fg=${bg},bg=default"
+}
+
+# Re-roll the current tmux session's color theme
+tmux-theme() {
+    if [ -z "$TMUX" ]; then
+        echo "Not inside tmux" >&2
+        return 1
+    fi
+    __tmux_apply_session_theme "$(tmux display-message -p '#S')"
+}
+
 # ghq + tmux session helper
 widget::ghq::source() {
     local session color icon green="\e[32m" blue="\e[34m" reset="\e[m" checked="✔" unchecked="✖"
@@ -302,7 +334,7 @@ widget::ghq::session() {
     fi
 
     local repo_dir="$(ghq list --exact --full-path "$selected")"
-    local session_name="${selected//[:. ]/-}"
+    local session_name="${${selected##*/}//[:. ]/-}"
     echo $session_name
 
     if [ -z "$TMUX" ]; then
@@ -314,6 +346,7 @@ widget::ghq::session() {
         zle accept-line
     else
         tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
+        __tmux_apply_session_theme "$session_name"
         tmux switch-client -t "$session_name"
     fi
     zle -R -c

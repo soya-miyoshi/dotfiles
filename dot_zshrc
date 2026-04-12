@@ -1,8 +1,9 @@
 if [[ $(uname -m) == 'arm64' ]]; then
-  eval $(/opt/homebrew/bin/brew shellenv) 
+  eval $(/opt/homebrew/bin/brew shellenv)
 else
   eval "$(brew shellenv)"
 fi
+export HOMEBREW_NO_AUTO_UPDATE=1
 
 zshaddhistory() {
     local line="${1%%$'\n'}"
@@ -24,7 +25,12 @@ fi
 # git-completionの読み込み
 fpath=(~/.zsh $fpath)
 zstyle ':completion:*:*:git:*' script ~/.zsh/completion/git-completion.bash
-autoload -Uz compinit && compinit
+autoload -Uz compinit
+if [[ -n "$HOME/.zcompdump"(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
 
 # git-promptの読み込み
 source $ZDOTDIR/.zsh/completion/git-prompt.sh
@@ -47,5 +53,3 @@ function get_cluster_short() {
 zinit wait lucid light-mode as'null' \
     atinit'source "$ZDOTDIR/.zshrc.lazy.sh"' \
     for 'zdharma-continuum/null'
-
-command -v thefuck >/dev/null 2>&1 && eval "$(thefuck --alias)"
