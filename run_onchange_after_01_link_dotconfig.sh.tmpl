@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Symlink ~/.dotconfig/* into ~/.config/
-# Runs after chezmoi has placed the .dotconfig directory.
+# Re-runs whenever dot_dotconfig contents change.
+# hash: {{ joinPath .chezmoi.sourceDir "dot_dotconfig" | glob | join "\n" | sha256sum }}
 set -euo pipefail
 
 mkdir -p "$HOME/.config"
