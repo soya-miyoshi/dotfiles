@@ -385,6 +385,14 @@ zinit wait lucid blockf light-mode for \
     @'zsh-users/zsh-autosuggestions' \
     @'zdharma-continuum/fast-syntax-highlighting'
 
+# zsh-interactive-cd: fzf-powered `cd` tab completion.
+# Needed because enhancd's cd-tab completion is broken upstream
+# (babarot/enhancd#206) — keep this loaded BEFORE enhancd so enhancd's cd
+# wrapper takes over runtime `cd`, while this plugin provides the tab
+# completion widget.
+zinit ice wait lucid blockf
+zinit light changyuheng/zsh-interactive-cd
+
 zinit ice wait lucid blockf
 zinit light babarot/enhancd
 export ENHANCD_HOOK_AFTER_CD="([ -f '.nvmrc' ] && nvm use)"
