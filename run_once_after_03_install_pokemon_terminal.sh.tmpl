@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Install the Pokemon-Terminal fork: clone via ghq, build a venv, and symlink
+# the `pokemon` entry point into ~/.local/bin. The fork already ships with
+# pre-darkened sprites, so no image processing is needed here.
+set -euo pipefail
+
+{{ if .ci -}}
+echo "[install_pokemon_terminal] CI mode: skipping"
+exit 0
+{{- end }}
+
+REPO_URL="https://github.com/soya-miyoshi/Pokemon-Terminal-Dark.git"
+REPO_PATH="github.com/soya-miyoshi/Pokemon-Terminal-Dark"
+BIN_DIR="${HOME}/.local/bin"
+POKE_LINK="${BIN_DIR}/pokemon"
+
+if [ -L "$POKE_LINK" ] && [ -e "$POKE_LINK" ]; then
+    echo "[install_pokemon_terminal] already installed at $POKE_LINK"
+    exit 0
+fi
+
+if ! command -v ghq >/dev/null 2>&1; then
+    echo "[install_pokemon_terminal] ghq not found, skipping"
+    exit 0
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+    echo "[install_pokemon_terminal] python3 not found, skipping"
+    exit 0
+fi
+
+echo "[install_pokemon_terminal] cloning fork via ghq..."
+ghq get "$REPO_URL"
+
+REPO_DIR="$(ghq root)/${REPO_PATH}"
+cd "$REPO_DIR"
+
+if [ ! -d .venv ]; then
+    echo "[install_pokemon_terminal] creating venv..."
+    python3 -m venv .venv
+fi
+
+# shellcheck disable=SC1091
+source .venv/bin/activate
+
+pip install --quiet --upgrade pip
+pip install --quiet -e .
+
+deactivate || true
+
+mkdir -p "$BIN_DIR"
+ln -sf "${REPO_DIR}/.venv/bin/pokemon" "$POKE_LINK"
+
+echo "[install_pokemon_terminal] installed -> $POKE_LINK"
