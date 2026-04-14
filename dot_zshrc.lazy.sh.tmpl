@@ -344,16 +344,25 @@ widget::ghq::session() {
     echo $session_name
 
     if [ -z "$TMUX" ]; then
-        BUFFER="tmux new-session -A -s ${(q)session_name} -c ${(q)repo_dir}"
-        cd $repo_dir
+        if tmux has-session -t "$session_name" 2>/dev/null; then
+            BUFFER="tmux attach-session -t ${(q)session_name}"
+        else
+            BUFFER="tmux new-session -s ${(q)session_name} -c ${(q)repo_dir} \\; send-keys 'pokemon' Enter"
+            cd $repo_dir
+        fi
         zle accept-line
     elif [ "$(tmux display-message -p "#S")" = "$session_name" ] && [ "$PWD" != "$repo_dir" ]; then
         BUFFER="cd ${(q)repo_dir}"
         zle accept-line
     else
-        tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
-        __tmux_apply_session_theme "$session_name"
-        tmux switch-client -t "$session_name"
+        if tmux has-session -t "$session_name" 2>/dev/null; then
+            tmux switch-client -t "$session_name"
+        else
+            tmux new-session -d -s "$session_name" -c "$repo_dir" 2>/dev/null
+            __tmux_apply_session_theme "$session_name"
+            tmux send-keys -t "$session_name" 'pokemon' Enter
+            tmux switch-client -t "$session_name"
+        fi
     fi
     zle -R -c
 }
