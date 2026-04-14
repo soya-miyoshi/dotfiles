@@ -1,14 +1,19 @@
 [user]
-	email = soya.miyoshi@gmail.com 
-	name = Soya Miyoshi 
+	email = soya.miyoshi@gmail.com
+	name = Soya Miyoshi
 [alias]
 	co = checkout
 	s = status .
-        st = status
+	st = status
 [init]
 	defaultBranch = main
 [credential]
-	helper = /usr/local/share/gcm-core/git-credential-manager-core
+{{- if eq .chezmoi.os "darwin" }}
+	helper = manager
+	credentialStore = keychain
+{{- else }}
+	helper = cache --timeout=3600
+{{- end }}
 [credential "https://dev.azure.com"]
 	useHttpPath = true
 [commit]
