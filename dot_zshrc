@@ -53,3 +53,28 @@ function get_cluster_short() {
 zinit wait lucid light-mode as'null' \
     atinit'source "$ZDOTDIR/.zshrc.lazy.sh"' \
     for 'zdharma-continuum/null'
+
+# Pokemon wrapper: defined eagerly (not in the lazy file) because the ghq
+# session helper sends `pokemon` to a brand-new tmux session immediately on
+# spawn — at that moment zinit's lazy plugins haven't been sourced yet, so a
+# wrapper defined in .zshrc.lazy.sh would still resolve to the raw binary.
+# Keeping it here guarantees the function exists from the very first prompt.
+pokemon() {
+    local cache_dir="${HOME}/.cache/pokemon-terminal"
+    mkdir -p "$cache_dir"
+
+    local session="default"
+    [ -n "$TMUX" ] && session=$(tmux display-message -p '#S' 2>/dev/null)
+    local cache_file="${cache_dir}/${session}"
+
+    local output
+    output=$(command pokemon -v "$@" 2>&1)
+    print -r -- "$output"
+
+    local name
+    name=$(printf '%s\n' "$output" | sed -nE 's/.*Chose ([A-Za-z0-9_-]+).*/\1/p' | tail -1)
+    if [ -n "$name" ]; then
+        printf '%s\n' "$name" > "$cache_file"
+        [ -n "$TMUX" ] && tmux refresh-client -S 2>/dev/null
+    fi
+}
